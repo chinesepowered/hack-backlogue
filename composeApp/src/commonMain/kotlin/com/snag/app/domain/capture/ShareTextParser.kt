@@ -111,29 +111,22 @@ object ShareTextParser {
         val titleText = url?.let { raw.replace(it, " ") } ?: raw
         val cleaned = cleanTitle(titleText)
 
-        return when {
-            cleaned.isBlank() -> CaptureCandidate(
-                query = "",
-                rawText = raw,
-                url = url,
-                source = source,
-                confidence = CaptureConfidence.Low,
-            )
-
-            else -> CaptureCandidate(
-                query = cleaned,
-                rawText = raw,
-                url = url,
-                source = source,
-                // A short, clean result after heavy stripping usually means we
-                // found the title. A long one means we mostly failed to strip.
-                confidence = if (cleaned.split(' ').size <= 6) {
-                    CaptureConfidence.Medium
-                } else {
-                    CaptureConfidence.Low
-                },
-            )
-        }
+        return CaptureCandidate(
+            query = cleaned.text,
+            rawText = raw,
+            url = url,
+            source = source,
+            confidence = when {
+                cleaned.text.isBlank() -> CaptureConfidence.Low
+                // We only got a result by putting back words we had classified
+                // as noise, so we are guessing. Send the user to a search box.
+                cleaned.usedFallback -> CaptureConfidence.Low
+                // A short result after heavy stripping usually means we found
+                // the title. A long one means we mostly failed to strip.
+                cleaned.text.split(' ').size <= 6 -> CaptureConfidence.Medium
+                else -> CaptureConfidence.Low
+            },
+        )
     }
 
     /**
@@ -156,7 +149,7 @@ object ShareTextParser {
                 segments.getOrNull(commentsIndex + 2)
                     ?.takeIf { commentsIndex >= 0 }
                     ?.slugToTitle()
-                    ?.let { cleanTitle(it) }
+                    ?.let { cleanTitle(it).text }
             }
 
             else -> null
@@ -166,15 +159,33 @@ object ShareTextParser {
     private fun String.slugToTitle(): String =
         replace('_', ' ').replace('-', ' ').trim()
 
-    private fun cleanTitle(input: String): String {
+    private data class CleanResult(val text: String, val usedFallback: Boolean)
+
+    private fun cleanTitle(input: String): CleanResult {
+        val base = stripOutletSuffix(
+            bracketedRegex.replace(emojiRegex.replace(input, " "), " ")
+        )
+
+        val kept = tokenize(stripNoisePhrases(base)).filter(::isMeaningful)
+        if (kept.isNotEmpty()) return CleanResult(join(kept), usedFallback = false)
+
+        // Everything we removed was, in fact, the title — "Gameplay Trailer"
+        // shared with no other context, say. Reinstate it rather than handing
+        // the user an empty search box; the caller downgrades confidence so the
+        // UI knows to ask rather than assume.
+        val baseWords = tokenize(base)
+        val keptBase = baseWords.filter(::isMeaningful)
+        val fallback = keptBase.ifEmpty { baseWords }
+        return CleanResult(join(fallback), usedFallback = true)
+    }
+
+    /**
+     * Everything after a trailing separator is usually the channel or outlet:
+     * "Silksong Review | IGN". Only cut when what follows actually looks like
+     * one, so "Dark Souls | Remastered" survives intact.
+     */
+    private fun stripOutletSuffix(input: String): String {
         var text = input
-
-        text = emojiRegex.replace(text, " ")
-        text = bracketedRegex.replace(text, " ")
-
-        // Everything after a trailing separator is usually the channel or
-        // outlet: "Silksong Review | IGN". Only cut when what follows actually
-        // looks like an outlet, so we never truncate "Dark Souls | Remastered".
         for (separator in listOf('|', '—', '–', '·')) {
             val idx = text.lastIndexOf(separator)
             if (idx > 0) {
@@ -184,44 +195,52 @@ object ShareTextParser {
                 }
             }
         }
+        return text
+    }
 
-        val lowered = text.lowercase()
-        var working = text
+    /**
+     * Blanks out noise phrases in place. Replacing with equal-length spaces
+     * rather than deleting keeps every index aligned with [lowered], so the
+     * whole pass can be driven off a single lowercased copy.
+     */
+    private fun stripNoisePhrases(input: String): String {
+        val lowered = input.lowercase()
+        var working = input
         for (phrase in noisePhrases) {
             var searchFrom = 0
             while (true) {
                 val idx = lowered.indexOf(phrase, searchFrom, ignoreCase = true)
                 if (idx < 0) break
-                // Only strip on whole-word boundaries.
-                val beforeOk = idx == 0 || !lowered[idx - 1].isLetterOrDigit()
                 val endIdx = idx + phrase.length
+                // Whole-word boundaries only, so "review" does not eat the
+                // "Review" inside a longer real word.
+                val beforeOk = idx == 0 || !lowered[idx - 1].isLetterOrDigit()
                 val afterOk = endIdx >= lowered.length || !lowered[endIdx].isLetterOrDigit()
-                if (beforeOk && afterOk && idx + phrase.length <= working.length) {
+                if (beforeOk && afterOk && endIdx <= working.length) {
                     working = working.replaceRange(idx, endIdx, " ".repeat(phrase.length))
                 }
                 searchFrom = endIdx
             }
         }
-        text = working
-
-        val words = text
-            .split(' ', '\n', '\t')
-            .map { it.trim().trim('-', '–', '—', '|', ':', ',', '.', '!', '?', '"', '\'', '·') }
-            .filter { it.isNotBlank() }
-
-        val kept = words.filter { word ->
-            val lower = word.lowercase()
-            when {
-                lower in tagWords -> false
-                // Hype words only go if the author was shouting them.
-                word == word.uppercase() && word.length > 1 && lower in hypeWords -> false
-                else -> true
-            }
-        }
-
-        // If stripping removed everything, the "noise" was the title. Fall back
-        // to the words we started with rather than returning nothing.
-        val result = (if (kept.isEmpty()) words else kept).joinToString(" ")
-        return result.trim().trim('-', ':', '|', ',').trim()
+        return working
     }
+
+    private fun tokenize(input: String): List<String> = input
+        .split(' ', '\n', '\t')
+        .map { it.trim().trim('-', '–', '—', '|', ':', ',', '.', '!', '?', '"', '\'', '·') }
+        .filter { it.isNotBlank() }
+
+    private fun isMeaningful(word: String): Boolean {
+        val lower = word.lowercase()
+        return when {
+            lower in tagWords -> false
+            // Hype words only go if the author was shouting them, since plenty
+            // of real titles contain "New" or "Best" in normal case.
+            word == word.uppercase() && word.length > 1 && lower in hypeWords -> false
+            else -> true
+        }
+    }
+
+    private fun join(words: List<String>): String =
+        words.joinToString(" ").trim().trim('-', ':', '|', ',').trim()
 }
