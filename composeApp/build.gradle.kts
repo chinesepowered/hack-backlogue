@@ -31,11 +31,27 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
+    // RevenueCat publishes no JVM artifact, so it cannot live in commonMain if
+    // we want a JVM target. A `mobile` group holds it instead — which is the
+    // honest description anyway: in-app purchases are a phone concern.
+    // The JVM target exists to render the real UI offscreen for store
+    // screenshots without an emulator (see jvmMain/ScreenshotGenerator.kt).
+    applyDefaultHierarchyTemplate {
+        common {
+            group("mobile") {
+                withAndroidTarget()
+                withIos()
+            }
+        }
+    }
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
+
+    jvm()
 
     // Apple Silicon only. Compose Multiplatform 1.11 stopped publishing
     // components-resources for iosX64, and the Intel simulator is not a target
@@ -91,9 +107,13 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+        }
 
-            implementation(libs.purchases.core)
-            implementation(libs.purchases.ui)
+        val mobileMain by getting {
+            dependencies {
+                implementation(libs.purchases.core)
+                implementation(libs.purchases.ui)
+            }
         }
 
         commonTest.dependencies {
@@ -115,6 +135,13 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
             implementation(libs.sqldelight.native.driver)
+        }
+
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqldelight.jvm.driver)
         }
     }
 }
@@ -173,4 +200,26 @@ sqldelight {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+/**
+ * Renders store screenshots from the real composables, offscreen via Skia.
+ * No emulator, no device, no Mac — `./gradlew screenshots`.
+ */
+tasks.register<JavaExec>("screenshots") {
+    group = "snag"
+    description = "Render App Store / Play Store screenshots to build/screenshots"
+
+    val jvmCompilation = kotlin.jvm().compilations.getByName("main")
+    dependsOn(jvmCompilation.compileTaskProvider)
+
+    mainClass.set("com.snag.app.screenshots.ScreenshotGeneratorKt")
+    classpath = files(
+        jvmCompilation.output.allOutputs,
+        jvmCompilation.runtimeDependencyFiles,
+    )
+    args = listOf(layout.buildDirectory.dir("screenshots").get().asFile.absolutePath)
+
+    // Skia renders offscreen, but AWT still wants a display without this.
+    systemProperty("java.awt.headless", "true")
 }

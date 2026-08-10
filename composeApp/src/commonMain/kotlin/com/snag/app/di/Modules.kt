@@ -2,8 +2,7 @@ package com.snag.app.di
 
 import com.snag.app.SnagConfig
 import com.snag.app.billing.ProAccess
-import com.snag.app.billing.RevenueCatProAccess
-import com.snag.app.billing.StubProAccess
+import com.snag.app.billing.createProAccess
 import com.snag.app.data.SnagRepository
 import com.snag.app.data.local.DatabaseDriverFactory
 import com.snag.app.data.remote.SnagApi
@@ -36,13 +35,7 @@ fun appModule(config: SnagConfig): Module = module {
     // Without a RevenueCat key the app runs fully on the free tier rather than
     // crashing or silently granting Pro. That keeps a fresh clone usable and
     // keeps the paywall paths honest in development.
-    single<ProAccess> {
-        if (config.revenueCatApiKey.isBlank()) {
-            StubProAccess()
-        } else {
-            RevenueCatProAccess(apiKey = config.revenueCatApiKey, debugLogging = config.debug)
-        }
-    }
+    single<ProAccess> { createProAccess(config.revenueCatApiKey, config.debug) }
 
     viewModel { PileViewModel(repository = get(), proAccess = get()) }
     viewModel { SearchViewModel(repository = get(), proAccess = get()) }

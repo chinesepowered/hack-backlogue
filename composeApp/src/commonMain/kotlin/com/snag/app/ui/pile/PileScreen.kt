@@ -56,6 +56,31 @@ fun PileScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    PileContent(
+        state = state,
+        onSelectFilter = viewModel::setFilter,
+        onOpenGame = onOpenGame,
+        onAddGame = onAddGame,
+        modifier = modifier,
+    )
+}
+
+/**
+ * The screen with its state passed in rather than collected.
+ *
+ * Splitting this out keeps the layout renderable without a ViewModel, a
+ * database, or a coroutine that has had time to emit — which is what lets the
+ * offscreen renderer produce store screenshots from the real composables
+ * instead of a mock-up that drifts from the app.
+ */
+@Composable
+fun PileContent(
+    state: PileUiState,
+    onSelectFilter: (BacklogStatus?) -> Unit,
+    onOpenGame: (Long) -> Unit,
+    onAddGame: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = SnagTheme.colors
 
     Scaffold(
@@ -83,7 +108,7 @@ fun PileScreen(
             FilterRow(
                 selected = state.filter,
                 counts = state.statusCounts,
-                onSelect = viewModel::setFilter,
+                onSelect = onSelectFilter,
             )
 
             if (state.showFreeTierHint) {

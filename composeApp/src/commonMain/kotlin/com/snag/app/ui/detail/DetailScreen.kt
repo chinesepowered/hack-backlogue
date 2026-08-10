@@ -44,12 +44,32 @@ fun DetailScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val colors = SnagTheme.colors
 
     LaunchedEffect(state.removed) {
         if (state.removed && !state.isLoading) onBack()
     }
 
+    DetailContent(
+        state = state,
+        onBack = onBack,
+        onSetStatus = viewModel::setStatus,
+        onRate = viewModel::rate,
+        onRemove = viewModel::remove,
+        modifier = modifier,
+    )
+}
+
+/** State-in, callbacks-out, so the offscreen renderer can draw it. */
+@Composable
+fun DetailContent(
+    state: DetailUiState,
+    onBack: () -> Unit,
+    onSetStatus: (BacklogStatus) -> Unit,
+    onRate: (Int) -> Unit,
+    onRemove: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = SnagTheme.colors
     val item = state.item ?: return
 
     Column(
@@ -66,7 +86,7 @@ fun DetailScreen(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = colors.textSecondary)
             }
             Box(Modifier.weight(1f))
-            IconButton(onClick = viewModel::remove) {
+            IconButton(onClick = onRemove) {
                 Icon(Icons.Default.Delete, "Remove from pile", tint = colors.textTertiary)
             }
         }
@@ -100,7 +120,7 @@ fun DetailScreen(
                 StatusChip(
                     status = status,
                     selected = item.status == status,
-                    onClick = { viewModel.setStatus(status) },
+                    onClick = { onSetStatus(status) },
                 )
             }
         }
@@ -112,7 +132,7 @@ fun DetailScreen(
                 StatusChip(
                     status = status,
                     selected = item.status == status,
-                    onClick = { viewModel.setStatus(status) },
+                    onClick = { onSetStatus(status) },
                 )
             }
         }
@@ -121,7 +141,7 @@ fun DetailScreen(
         // game they have not finished is how trackers end up full of noise.
         if (item.status.isResolved) {
             SectionLabel("Your rating")
-            RatingRow(rating = item.rating, onRate = viewModel::rate)
+            RatingRow(rating = item.rating, onRate = onRate)
         }
 
         item.game.summary?.let { summary ->
