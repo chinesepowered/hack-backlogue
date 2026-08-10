@@ -1,0 +1,65 @@
+-- A game the user has snagged, in whatever state it currently sits.
+CREATE TABLE SnaggedGame (
+    id                INTEGER NOT NULL PRIMARY KEY,
+    igdbId            INTEGER NOT NULL,
+    name              TEXT NOT NULL,
+    coverUrl          TEXT,
+    releaseDateEpoch  INTEGER,
+    summary           TEXT,
+    status            TEXT NOT NULL,
+    rating            INTEGER,
+    note              TEXT,
+    -- Where the user was standing when they snagged it. This is the bit that
+    -- makes the pile feel like a memory instead of a chore list.
+    sourceUrl         TEXT,
+    sourceLabel       TEXT,
+    snaggedAtEpoch    INTEGER NOT NULL,
+    startedAtEpoch    INTEGER,
+    finishedAtEpoch   INTEGER,
+    sortIndex         REAL NOT NULL DEFAULT 0.0
+);
+
+CREATE INDEX snagged_status_idx ON SnaggedGame(status);
+CREATE UNIQUE INDEX snagged_igdb_idx ON SnaggedGame(igdbId);
+
+selectAll:
+SELECT * FROM SnaggedGame ORDER BY sortIndex ASC, snaggedAtEpoch DESC;
+
+selectByStatus:
+SELECT * FROM SnaggedGame WHERE status = ? ORDER BY sortIndex ASC, snaggedAtEpoch DESC;
+
+selectById:
+SELECT * FROM SnaggedGame WHERE id = ?;
+
+selectByIgdbId:
+SELECT * FROM SnaggedGame WHERE igdbId = ?;
+
+countAll:
+SELECT count(*) FROM SnaggedGame;
+
+countByStatus:
+SELECT count(*) FROM SnaggedGame WHERE status = ?;
+
+upsert:
+INSERT OR REPLACE INTO SnaggedGame(
+    id, igdbId, name, coverUrl, releaseDateEpoch, summary, status, rating, note,
+    sourceUrl, sourceLabel, snaggedAtEpoch, startedAtEpoch, finishedAtEpoch, sortIndex
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateStatus:
+UPDATE SnaggedGame SET status = ?, startedAtEpoch = ?, finishedAtEpoch = ? WHERE id = ?;
+
+updateRating:
+UPDATE SnaggedGame SET rating = ? WHERE id = ?;
+
+updateNote:
+UPDATE SnaggedGame SET note = ? WHERE id = ?;
+
+updateSortIndex:
+UPDATE SnaggedGame SET sortIndex = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM SnaggedGame WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();
