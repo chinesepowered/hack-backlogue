@@ -1,0 +1,20 @@
+name = "snag-api"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+
+# Hourly is the right cadence for what this watches. Release dates and store
+# availability change on the scale of days, so polling faster would burn IGDB
+# rate limit to learn nothing, and a player who hears about a release an hour
+# late has lost nothing either.
+[triggers]
+crons = ["0 * * * *"]
+
+[[kv_namespaces]]
+binding = "SNAG_KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Secrets are never listed here. Set them with:
+#   wrangler secret put TWITCH_CLIENT_ID
+#   wrangler secret put TWITCH_CLIENT_SECRET
+#   wrangler secret put ONESIGNAL_APP_ID
+#   wrangler secret put ONESIGNAL_REST_API_KEY

@@ -19,8 +19,9 @@ Built for **RevenueCat Shipaton 2026**.
 
 ## Status
 
-Early. The project scaffold, design system, domain model, and share-capture
-parser are in place and building for Android. See [Roadmap](#roadmap).
+The Android app builds and runs, the Worker deploys, and the shared Kotlin
+compiles. The iOS sources are written but have **not** been through a compiler
+yet — see [SUBMISSION.md](SUBMISSION.md) for what is left and what it needs.
 
 ## Why it is built this way
 
@@ -94,12 +95,15 @@ echo "sdk.dir=$ANDROID_HOME" > local.properties
 - [x] KMP + Compose Multiplatform scaffold, building for Android
 - [x] Design system: colour, type, shape, motion tokens
 - [x] Domain model and share-payload parser, with tests
-- [ ] IGDB client and repository layer
-- [ ] Pile, search, and game detail screens
-- [ ] Android share-sheet capture and iOS Share Extension
-- [ ] RevenueCat paywall and entitlements
-- [ ] Sale, release, and leaving-service alerts
-- [ ] iOS app target and App Store submission
+- [x] Cloudflare Worker: IGDB proxy + hourly alert sweep
+- [x] Repository layer, SQLDelight store, Ktor client
+- [x] Pile, search, and game detail screens
+- [x] Android share-sheet capture (`ACTION_SEND` + `PROCESS_TEXT`)
+- [x] RevenueCat entitlements and paywall UI
+- [ ] iOS: compile, Xcode targets, Share Extension wiring
+- [ ] Custom lists and year-in-review (advertised on the paywall — build or cut)
+- [ ] Price-drop alerts (needs a pricing source IGDB does not provide)
+- [ ] Store listings and submission
 
 ## License
 

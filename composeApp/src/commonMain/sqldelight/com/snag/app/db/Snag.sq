@@ -40,11 +40,26 @@ SELECT count(*) FROM SnaggedGame;
 countByStatus:
 SELECT count(*) FROM SnaggedGame WHERE status = ?;
 
-upsert:
-INSERT OR REPLACE INTO SnaggedGame(
-    id, igdbId, name, coverUrl, releaseDateEpoch, summary, status, rating, note,
+-- id is omitted so SQLite assigns the rowid. INSERT OR IGNORE makes snagging
+-- idempotent against the unique igdbId index: sharing the same game twice
+-- should be a no-op, not a duplicate row or a crash.
+insert:
+INSERT OR IGNORE INTO SnaggedGame(
+    igdbId, name, coverUrl, releaseDateEpoch, summary, status, rating, note,
     sourceUrl, sourceLabel, snaggedAtEpoch, startedAtEpoch, finishedAtEpoch, sortIndex
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- Refreshes catalogue fields without touching anything the player owns
+-- (status, rating, note, provenance).
+updateCatalogueData:
+UPDATE SnaggedGame
+SET name = ?, coverUrl = ?, releaseDateEpoch = ?, summary = ?
+WHERE igdbId = ?;
+
+-- Written as an ordered LIMIT 1 rather than min() so SQLDelight generates a
+-- plain nullable Double instead of an aggregate wrapper type.
+minSortIndex:
+SELECT sortIndex FROM SnaggedGame ORDER BY sortIndex ASC LIMIT 1;
 
 updateStatus:
 UPDATE SnaggedGame SET status = ?, startedAtEpoch = ?, finishedAtEpoch = ? WHERE id = ?;

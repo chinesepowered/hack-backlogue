@@ -1,4 +1,18 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+/**
+ * Client keys live in local.properties (git-ignored) so a fresh clone builds
+ * without them. The genuinely secret value — the Twitch client secret IGDB
+ * requires — is never read here; it exists only in the Cloudflare Worker.
+ */
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+fun secretOrEmpty(key: String): String =
+    (localProperties.getProperty(key) ?: System.getenv(key) ?: "").trim()
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -10,6 +24,13 @@ plugins {
 }
 
 kotlin {
+    // expect/actual classes are still flagged Beta. We use them only for the
+    // two genuine platform seams (database driver, HTTP engine), which is the
+    // intended use, so the warning is noise rather than signal.
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
@@ -31,6 +52,16 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            // The `compose.*` accessors are deprecated in Compose Multiplatform
+            // 1.11, but the explicit coordinates they point to are not yet
+            // published at this version, so migrating now breaks resolution.
+            // Left as-is deliberately; revisit when 1.12 lands.
+            //
+            // materialIconsExtended is the only source of `Icons` here —
+            // Compose Multiplatform's material3 does not bundle icons-core the
+            // way the Android artifact does. It is pinned upstream to 1.7.3 and
+            // is heavy for the four icons this app draws, so replacing them
+            // with hand-authored ImageVectors is worth doing before release.
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -98,6 +129,10 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "0.1.0"
+
+        buildConfigField("String", "SNAG_API_BASE_URL", "\"${secretOrEmpty("SNAG_API_BASE_URL")}\"")
+        buildConfigField("String", "REVENUECAT_ANDROID_KEY", "\"${secretOrEmpty("REVENUECAT_ANDROID_KEY")}\"")
+        buildConfigField("String", "ONESIGNAL_APP_ID", "\"${secretOrEmpty("ONESIGNAL_APP_ID")}\"")
     }
 
     sourceSets["main"].res.srcDirs("src/androidMain/res")
