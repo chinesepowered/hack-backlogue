@@ -48,9 +48,16 @@ private val StatusBarInset = 44.dp
 fun main(args: Array<String>) {
     val outputDir = File(args.firstOrNull() ?: "screenshots").apply { mkdirs() }
 
+    val counts = sampledPile.groupingBy { it.status }.eachCount()
+
     render(outputDir, "01-pile") {
         PileContent(
-            state = PileUiState(items = sampledPile, totalCount = sampledPile.size.toLong(), isLoading = false),
+            state = PileUiState(
+                items = sampledPile,
+                statusCounts = counts,
+                totalCount = sampledPile.size.toLong(),
+                isLoading = false,
+            ),
             onSelectFilter = {},
             onOpenGame = {},
             onAddGame = {},
@@ -70,6 +77,7 @@ fun main(args: Array<String>) {
         PileContent(
             state = PileUiState(
                 items = sampledPile.filter { it.status == BacklogStatus.Playing },
+                statusCounts = counts,
                 filter = BacklogStatus.Playing,
                 totalCount = sampledPile.size.toLong(),
                 isLoading = false,

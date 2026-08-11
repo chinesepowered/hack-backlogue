@@ -100,6 +100,9 @@ echo "sdk.dir=$ANDROID_HOME" > local.properties
 - [x] Pile, search, and game detail screens
 - [x] Android share-sheet capture (`ACTION_SEND` + `PROCESS_TEXT`)
 - [x] RevenueCat entitlements and paywall UI
+- [x] Offscreen screenshot rendering (`./gradlew screenshots`)
+- [ ] **Purchase flow** — the paywall reads entitlements but cannot start a purchase
+- [ ] **OneSignal client** — the Worker sends, but no device registers or receives
 - [ ] iOS: compile, Xcode targets, Share Extension wiring
 - [ ] Custom lists and year-in-review (advertised on the paywall — build or cut)
 - [ ] Price-drop alerts (needs a pricing source IGDB does not provide)

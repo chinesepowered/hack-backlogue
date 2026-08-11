@@ -153,13 +153,26 @@ on. Save the paywall for last or skip it.
 - Shared Kotlin compiles for Android; iOS sources written, **not yet compiled**
 - Design system, domain model, capture parser, pile/search/detail, paywall UI
 
-## What is deliberately not built
+## Known gaps — read this before submitting
 
-- **Sale and price-drop alerts.** The Worker handles release dates and
-  launches, which need only IGDB. Real price tracking needs a store pricing
-  source IGDB does not provide, and wiring one up properly is a bigger job than
-  the remaining days justify. The OneSignal entry stands on release alerts,
-  which work end to end.
-- **Custom lists and year-in-review.** Both are advertised on the paywall.
-  Either build them or cut those two lines before you ship — selling something
+Three things are wired on one side only. None of them will fail a build, which
+is exactly why they are listed here.
+
+- **Nothing purchases anything.** The paywall's "Get Pro" button only dismisses
+  the sheet (`App.kt`, `onPurchase`). RevenueCat is wired for *reading*
+  entitlements, so Pro correctly unlocks if a purchase happens elsewhere, but
+  no purchase can be started from inside the app. This must be built before the
+  app is submittable at all — a reviewer will tap that button.
+- **OneSignal is Worker-side only.** The Worker can send pushes, and
+  `/v1/watch` accepts registrations, but the app has no OneSignal SDK
+  dependency, never obtains a subscription id, and never calls
+  `SnagApi.watch()` — which is currently dead code. So no device can receive
+  an alert. The Keep Them Coming Back entry does not stand up until the client
+  half exists.
+- **Custom lists and year-in-review.** Both are advertised on the paywall and
+  neither exists. Either build them or cut those two lines — selling something
   that does not exist is the one thing that will actually sink a submission.
+
+Also deliberately out of scope: **price-drop alerts**. The Worker handles
+release dates and launches, which need only IGDB. Real price tracking needs a
+store pricing source IGDB does not provide.

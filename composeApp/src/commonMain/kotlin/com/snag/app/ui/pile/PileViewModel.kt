@@ -16,13 +16,20 @@ import kotlinx.coroutines.launch
 
 data class PileUiState(
     val items: List<SnaggedGame> = emptyList(),
+    /**
+     * Counts across the *whole* pile, not [items].
+     *
+     * Deriving these from the filtered list is a trap: with a filter active,
+     * every status except the selected one drops to zero, the filter row hides
+     * those chips, and the only way back is the All chip. The counts have to
+     * outlive the filter that is using them.
+     */
+    val statusCounts: Map<BacklogStatus, Int> = emptyMap(),
     val filter: BacklogStatus? = null,
     val totalCount: Long = 0,
     val isPro: Boolean = false,
     val isLoading: Boolean = true,
 ) {
-    val statusCounts: Map<BacklogStatus, Int>
-        get() = items.groupingBy { it.status }.eachCount()
 
     /** Only surfaced as we approach the cap — never as a persistent nag. */
     val showFreeTierHint: Boolean
@@ -47,6 +54,7 @@ class PileViewModel(
     ) { all, activeFilter, count, isPro ->
         PileUiState(
             items = if (activeFilter == null) all else all.filter { it.status == activeFilter },
+            statusCounts = all.groupingBy { it.status }.eachCount(),
             filter = activeFilter,
             totalCount = count,
             isPro = isPro,
