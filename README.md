@@ -101,10 +101,9 @@ echo "sdk.dir=$ANDROID_HOME" > local.properties
 - [x] Android share-sheet capture (`ACTION_SEND` + `PROCESS_TEXT`)
 - [x] RevenueCat entitlements and paywall UI
 - [x] Offscreen screenshot rendering (`./gradlew screenshots`)
-- [ ] **Purchase flow** — the paywall reads entitlements but cannot start a purchase
-- [ ] **OneSignal client** — the Worker sends, but no device registers or receives
-- [ ] iOS: compile, Xcode targets, Share Extension wiring
-- [ ] Custom lists and year-in-review (advertised on the paywall — build or cut)
+- [x] Purchase and restore through RevenueCat offerings
+- [x] OneSignal registration and release alerts (Android; iOS pending)
+- [ ] iOS: compile, Xcode targets, Share Extension, OneSignal SPM
 - [ ] Price-drop alerts (needs a pricing source IGDB does not provide)
 - [ ] Store listings and submission
 

@@ -7,6 +7,7 @@ import com.snag.app.data.SnagRepository
 import com.snag.app.data.local.DatabaseDriverFactory
 import com.snag.app.data.remote.SnagApi
 import com.snag.app.data.remote.createSnagHttpClient
+import com.snag.app.push.AlertSync
 import com.snag.app.db.SnagDatabase
 import com.snag.app.ui.detail.DetailViewModel
 import com.snag.app.ui.pile.PileViewModel
@@ -36,6 +37,8 @@ fun appModule(config: SnagConfig): Module = module {
     // crashing or silently granting Pro. That keeps a fresh clone usable and
     // keeps the paywall paths honest in development.
     single<ProAccess> { createProAccess(config.revenueCatApiKey, config.debug) }
+
+    single { AlertSync(repository = get(), api = get(), push = get()) }
 
     viewModel { PileViewModel(repository = get(), proAccess = get()) }
     viewModel { SearchViewModel(repository = get(), proAccess = get()) }

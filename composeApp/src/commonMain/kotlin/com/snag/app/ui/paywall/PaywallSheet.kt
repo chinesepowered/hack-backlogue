@@ -40,6 +40,8 @@ fun PaywallSheet(
     onDismiss: () -> Unit,
     onPurchase: () -> Unit,
     onRestore: () -> Unit,
+    busy: Boolean = false,
+    message: String? = null,
 ) {
     val colors = SnagTheme.colors
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -68,34 +70,51 @@ fun PaywallSheet(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                // Only ship claims the app can actually honour. Custom lists
+                // and a year-in-review were advertised here before either
+                // existed; selling absent features is the fastest way to lose
+                // a store review, and it is not worth a conversion point.
                 ProFeature("An unlimited pile", "No cap, ever.")
                 ProFeature(
-                    "Know when to buy",
-                    "A nudge when a wishlisted game goes on sale, gets a release date, " +
-                        "or is about to leave a service you pay for.",
+                    "Know when it lands",
+                    "A nudge when a wishlisted game finally gets a release date, " +
+                        "or the day it comes out.",
                 )
-                ProFeature("Custom lists", "Group by mood, console, co-op partner — however you think.")
-                ProFeature("Your year in games", "A share-ready look back at everything you played.")
             }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(SnagShapes.chip)
-                    .background(colors.accent)
-                    .clickable(onClick = onPurchase)
+                    .background(if (busy) colors.accentPressed else colors.accent)
+                    .clickable(enabled = !busy, onClick = onPurchase)
                     .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("Get Pro", style = SnagType.label, color = colors.textOnAccent)
+                Text(
+                    text = if (busy) "Working…" else "Get Pro",
+                    style = SnagType.label,
+                    color = colors.textOnAccent,
+                )
             }
 
             Text(
                 text = "Restore purchases",
                 style = SnagType.meta,
                 color = colors.textTertiary,
-                modifier = Modifier.clickable(onClick = onRestore).padding(8.dp),
+                modifier = Modifier
+                    .clickable(enabled = !busy, onClick = onRestore)
+                    .padding(8.dp),
             )
+
+            if (message != null) {
+                Text(
+                    text = message,
+                    style = SnagType.meta,
+                    color = colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }

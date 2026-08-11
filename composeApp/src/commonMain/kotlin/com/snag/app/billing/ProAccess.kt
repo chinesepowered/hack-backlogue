@@ -37,6 +37,22 @@ object ProLimits {
  * matters here because in-app purchases cannot be tested in a CI container or
  * on a simulator.
  */
+/**
+ * Outcome of a purchase or restore.
+ *
+ * [Cancelled] is separated from [Failed] because it is not an error and must
+ * never surface as one — a user who backs out of the store sheet has done
+ * nothing wrong, and showing them a failure message for it is the fastest way
+ * to make a paywall feel hostile.
+ */
+sealed interface PurchaseOutcome {
+    data object Success : PurchaseOutcome
+    data object Cancelled : PurchaseOutcome
+    /** No store connection on this platform, or no offering configured. */
+    data object Unavailable : PurchaseOutcome
+    data class Failed(val message: String?) : PurchaseOutcome
+}
+
 interface ProAccess {
     val isPro: StateFlow<Boolean>
 
@@ -45,6 +61,12 @@ interface ProAccess {
 
     /** Pulls fresh entitlement state, e.g. after returning from the paywall. */
     suspend fun refresh()
+
+    /** Buys the default offering's first package. */
+    suspend fun purchase(): PurchaseOutcome
+
+    /** Re-applies entitlements already owned by this store account. */
+    suspend fun restore(): PurchaseOutcome
 
     /**
      * Whether one more game fits. Kept here rather than in the repository so
@@ -68,6 +90,12 @@ class StubProAccess(initiallyPro: Boolean = false) : ProAccess {
 
     override fun start() = Unit
     override suspend fun refresh() = Unit
+
+    // Deliberately not faking success. A stub that grants Pro would make the
+    // paywall untestable and would hide a missing store configuration behind a
+    // working-looking button.
+    override suspend fun purchase(): PurchaseOutcome = PurchaseOutcome.Unavailable
+    override suspend fun restore(): PurchaseOutcome = PurchaseOutcome.Unavailable
 
     fun setPro(value: Boolean) {
         _isPro.value = value

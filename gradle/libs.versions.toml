@@ -20,6 +20,7 @@ ktor = "3.4.0"
 sqldelight = "2.1.0"
 koin = "4.1.0"
 coil = "3.3.0"
+onesignal = "5.1.34"
 
 purchases-kmp = "3.4.0"
 
@@ -64,6 +65,9 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 # Images
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+
+# Push
+onesignal = { module = "com.onesignal:OneSignal", version.ref = "onesignal" }
 
 # Monetization
 purchases-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "purchases-kmp" }

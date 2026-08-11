@@ -5,6 +5,10 @@ import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.PurchasesDelegate
 import com.revenuecat.purchases.kmp.configure
 import com.revenuecat.purchases.kmp.ktx.awaitCustomerInfo
+import com.revenuecat.purchases.kmp.ktx.awaitOfferings
+import com.revenuecat.purchases.kmp.ktx.awaitPurchase
+import com.revenuecat.purchases.kmp.ktx.awaitRestore
+import com.revenuecat.purchases.kmp.models.PurchasesTransactionException
 import com.revenuecat.purchases.kmp.models.CustomerInfo
 import com.revenuecat.purchases.kmp.models.PurchasesError
 import com.revenuecat.purchases.kmp.models.StoreProduct
@@ -65,6 +69,51 @@ class RevenueCatProAccess(
         // yanking Pro away from a paying user who is briefly offline.
         runCatching { Purchases.sharedInstance.awaitCustomerInfo() }
             .onSuccess { _isPro.value = it.isPro }
+    }
+
+    override suspend fun purchase(): PurchaseOutcome {
+        if (!configured) return PurchaseOutcome.Unavailable
+
+        val offering = runCatching { Purchases.sharedInstance.awaitOfferings() }
+            .getOrNull()
+            ?.let { it.current ?: it[ProLimits.DefaultOfferingId] }
+            ?: return PurchaseOutcome.Unavailable
+
+        // The paywall sells a single thing, so the first package is the offer.
+        // Multi-package pricing is configured in the RevenueCat dashboard and
+        // would need the UI to let the user choose before this can change.
+        val target = offering.availablePackages.firstOrNull()
+            ?: return PurchaseOutcome.Unavailable
+
+        return try {
+            val result = Purchases.sharedInstance.awaitPurchase(target)
+            _isPro.value = result.customerInfo.isPro
+            if (_isPro.value) PurchaseOutcome.Success else PurchaseOutcome.Failed(null)
+        } catch (cancellation: PurchasesTransactionException) {
+            if (cancellation.userCancelled) {
+                PurchaseOutcome.Cancelled
+            } else {
+                PurchaseOutcome.Failed(cancellation.message)
+            }
+        } catch (error: Throwable) {
+            PurchaseOutcome.Failed(error.message)
+        }
+    }
+
+    override suspend fun restore(): PurchaseOutcome {
+        if (!configured) return PurchaseOutcome.Unavailable
+
+        return runCatching { Purchases.sharedInstance.awaitRestore() }
+            .fold(
+                onSuccess = { info ->
+                    _isPro.value = info.isPro
+                    // Restoring with nothing to restore is not a failure, but it
+                    // must not silently look like one either — the caller
+                    // distinguishes so the UI can say "nothing to restore".
+                    if (info.isPro) PurchaseOutcome.Success else PurchaseOutcome.Unavailable
+                },
+                onFailure = { PurchaseOutcome.Failed(it.message) },
+            )
     }
 }
 

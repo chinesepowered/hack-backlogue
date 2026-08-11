@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -12,7 +13,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.snag.app.billing.ProAccess
+import com.snag.app.billing.PurchaseOutcome
 import com.snag.app.domain.capture.CaptureCandidate
+import com.snag.app.push.AlertSync
 import com.snag.app.ui.detail.DetailScreen
 import com.snag.app.ui.detail.DetailViewModel
 import com.snag.app.ui.paywall.PaywallSheet
@@ -21,6 +24,7 @@ import com.snag.app.ui.pile.PileViewModel
 import com.snag.app.ui.search.SearchScreen
 import com.snag.app.ui.search.SearchViewModel
 import com.snag.app.ui.theme.SnagTheme
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -46,11 +50,20 @@ fun App(
 ) {
     SnagTheme {
         val proAccess = koinInject<ProAccess>()
+        val alertSync = koinInject<AlertSync>()
+        val config = koinInject<SnagConfig>()
         var showPaywall by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
             proAccess.start()
             proAccess.refresh()
+        }
+
+        // Separate effect because this one never returns — it collects the pile
+        // for as long as the app is alive. Sharing an effect with the one-shot
+        // RevenueCat setup above would mean the refresh never completed.
+        LaunchedEffect(Unit) {
+            alertSync.run(config.oneSignalAppId)
         }
 
         NavHost(
@@ -90,10 +103,40 @@ fun App(
         }
 
         if (showPaywall) {
+            var busy by remember { mutableStateOf(false) }
+            var message by remember { mutableStateOf<String?>(null) }
+            val scope = rememberCoroutineScope()
+
+            /**
+             * Purchase and restore differ only in which call they make, and both
+             * must leave the sheet open on anything except success — closing it
+             * on a failure hides the reason the user did not get what they paid
+             * for.
+             */
+            fun run(action: suspend () -> PurchaseOutcome) {
+                scope.launch {
+                    busy = true
+                    message = null
+                    when (val outcome = action()) {
+                        PurchaseOutcome.Success -> showPaywall = false
+                        // Backing out of the store sheet is not an error and
+                        // gets no error message.
+                        PurchaseOutcome.Cancelled -> Unit
+                        PurchaseOutcome.Unavailable ->
+                            message = "Nothing to buy or restore right now."
+                        is PurchaseOutcome.Failed ->
+                            message = outcome.message ?: "That didn't go through."
+                    }
+                    busy = false
+                }
+            }
+
             PaywallSheet(
                 onDismiss = { showPaywall = false },
-                onPurchase = { showPaywall = false },
-                onRestore = { showPaywall = false },
+                onPurchase = { run { proAccess.purchase() } },
+                onRestore = { run { proAccess.restore() } },
+                busy = busy,
+                message = message,
             )
         }
     }

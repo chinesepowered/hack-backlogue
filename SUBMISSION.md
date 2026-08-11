@@ -155,23 +155,13 @@ on. Save the paywall for last or skip it.
 
 ## Known gaps — read this before submitting
 
-Three things are wired on one side only. None of them will fail a build, which
-is exactly why they are listed here.
-
-- **Nothing purchases anything.** The paywall's "Get Pro" button only dismisses
-  the sheet (`App.kt`, `onPurchase`). RevenueCat is wired for *reading*
-  entitlements, so Pro correctly unlocks if a purchase happens elsewhere, but
-  no purchase can be started from inside the app. This must be built before the
-  app is submittable at all — a reviewer will tap that button.
-- **OneSignal is Worker-side only.** The Worker can send pushes, and
-  `/v1/watch` accepts registrations, but the app has no OneSignal SDK
-  dependency, never obtains a subscription id, and never calls
-  `SnagApi.watch()` — which is currently dead code. So no device can receive
-  an alert. The Keep Them Coming Back entry does not stand up until the client
-  half exists.
-- **Custom lists and year-in-review.** Both are advertised on the paywall and
-  neither exists. Either build them or cut those two lines — selling something
-  that does not exist is the one thing that will actually sink a submission.
+- **iOS push does not register.** OneSignal's iOS SDK is a Swift package with
+  no Kotlin bindings, so `Modules.ios.kt` binds `NoPushRegistrar`. Android
+  registers and receives; iOS needs the OneSignal SPM dependency added in Xcode
+  and a Swift-backed `PushRegistrar`. Everything above that seam already works.
+- **Nothing on iOS has been compiled.** Kotlin/Native iOS targets require the
+  Xcode toolchain, which exists only on macOS, so no amount of CI effort can
+  cover this — it has to happen on your Mac.
 
 Also deliberately out of scope: **price-drop alerts**. The Worker handles
 release dates and launches, which need only IGDB. Real price tracking needs a
