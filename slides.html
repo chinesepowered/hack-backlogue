@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snag — Pitch Deck</title>
+<style>
+  /* Committed to the app's own dark palette rather than following the
+     viewer's theme: this deck is a presentation surface, and the whole design
+     argument it makes is about a dark, art-forward interface. */
+  :root {
+    --bg: #0B0910;
+    --surface: #15121C;
+    --elevated: #1F1B29;
+    --outline: #2E2839;
+    --text: #F5F2FA;
+    --text-2: #A79FB8;
+    --text-3: #6E667F;
+    --accent: #FF5A3C;
+    --gold: #FFD166;
+    --playing: #3DD68C;
+    --wishlist: #8B7BF7;
+    --backlog: #5AA9E6;
+    --max: 1100px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .deck { scroll-snap-type: y mandatory; overflow-y: auto; height: 100vh; }
+
+  .slide {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(28px, 6vw, 90px);
+    max-width: var(--max);
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-size: clamp(44px, 8vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    margin: 0 0 20px;
+    font-weight: 800;
+  }
+
+  h2 {
+    font-size: clamp(30px, 4.6vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    margin: 0 0 22px;
+    font-weight: 700;
+    max-width: 20ch;
+  }
+
+  p, li {
+    font-size: clamp(16px, 1.9vw, 20px);
+    line-height: 1.6;
+    color: var(--text-2);
+    max-width: 62ch;
+  }
+
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--gold); font-style: normal; font-weight: 600; }
+
+  .lede { font-size: clamp(19px, 2.4vw, 26px); color: var(--text-2); max-width: 40ch; }
+
+  .accent { color: var(--accent); }
+
+  .rule { width: 56px; height: 4px; background: var(--accent); border-radius: 2px; margin: 0 0 26px; }
+
+  ul { padding-left: 0; list-style: none; margin: 8px 0 0; }
+  ul li { position: relative; padding-left: 26px; margin-bottom: 14px; }
+  ul li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0.62em;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .grid { display: grid; gap: 20px; margin-top: 12px; }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: 16px;
+    padding: 22px 24px;
+  }
+  .card h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .card p { font-size: 15px; margin: 0; line-height: 1.5; }
+  .card .num {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .shots { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 26px; }
+  .shots img {
+    width: clamp(150px, 20vw, 215px);
+    border-radius: 18px;
+    border: 1px solid var(--outline);
+    display: block;
+  }
+  figure { margin: 0; }
+  figcaption { font-size: 13px; color: var(--text-3); margin-top: 10px; }
+
+  .steps { counter-reset: step; display: grid; gap: 16px; margin-top: 20px; }
+  .step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    flex: 0 0 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #1A0A06;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+  }
+  .step p { margin: 4px 0 0; font-size: 16px; }
+  .step b { color: var(--text); }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 14px; font-size: 15px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--outline); }
+  th { color: var(--text-3); font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  td { color: var(--text-2); }
+  td:first-child { color: var(--text); font-weight: 500; }
+  .scroll-x { overflow-x: auto; }
+
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--outline);
+    color: var(--text-2);
+    margin: 0 6px 8px 0;
+  }
+  .tag.done { border-color: rgba(61,214,140,.45); color: var(--playing); }
+  .tag.wip  { border-color: rgba(255,209,102,.45); color: var(--gold); }
+  .tag.todo { border-color: var(--outline); color: var(--text-3); }
+
+  .quote {
+    font-size: clamp(22px, 3.2vw, 34px);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    font-weight: 600;
+    max-width: 24ch;
+    border-left: 4px solid var(--accent);
+    padding-left: 24px;
+  }
+
+  .pagenum {
+    position: absolute;
+    bottom: clamp(18px, 3vw, 34px);
+    right: clamp(28px, 6vw, 90px);
+    font-size: 12px;
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hint {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text-3);
+    background: rgba(11,9,16,.85);
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--outline);
+    z-index: 10;
+    transition: opacity .4s;
+  }
+  .hint.gone { opacity: 0; pointer-events: none; }
+
+  @media print {
+    .deck { height: auto; overflow: visible; }
+    .slide { min-height: auto; page-break-after: always; padding: 40px; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- 1 -->
+  <section class="slide">
+    <div class="eyebrow">RevenueCat Shipaton 2026</div>
+    <h1>Snag</h1>
+    <p class="lede">Snag it now, play it later.</p>
+    <p style="margin-top:34px;max-width:46ch">A gaming bucket list built around the one
+      moment every other backlog app misses: the second you <em>discover</em> a game.</p>
+    <div class="pagenum">01</div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="rule"></div>
+    <h2>Nobody's backlog is accurate</h2>
+    <p>Every tracker on the market competes on the same thing: organising games you've
+      already saved.</p>
+    <p>That's the wrong battle. The failure happens earlier — <strong>most games never
+      make it into the list at all.</strong></p>
+    <div class="pagenum">02</div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="eyebrow">The gap</div>
+    <h2>Discovery and saving happen in different places</h2>
+    <p>You're three minutes into a review. Something looks good. To save it, the app asks
+      you to leave the video, open it, search for the game, and file it.</p>
+    <p><strong>Almost nobody does that.</strong> The game is forgotten by the time the
+      video ends.</p>
+    <div class="pagenum">03</div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="eyebrow">The insight</div>
+    <h2>So don't build an app. Build a share target.</h2>
+    <p>Snag lives in the share sheet. You never leave what you were doing.</p>
+    <div class="steps">
+      <div class="step"><p><b>Watching a video, reading a thread, browsing a store page.</b>
+        Something catches your eye.</p></div>
+      <div class="step"><p><b>Share → Snag.</b> One tap, from inside the app you were
+        already in.</p></div>
+      <div class="step"><p><b>It's saved.</b> Before the video finishes buffering — with
+        a note about where you found it.</p></div>
+    </div>
+    <div class="pagenum">04</div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="eyebrow">The hard part</div>
+    <h2>Turning a clickbait title into a game</h2>
+    <p>A YouTube share arrives as decorated noise. A Steam share has the answer sitting
+      in the URL. Both have to resolve without the user typing a character.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>What arrives</h3>
+        <p style="font-family:ui-monospace,monospace;font-size:13px;color:var(--text-3)">
+          🔥 SILKSONG IS FINALLY HERE<br>— First 3 Hours | IGN<br>https://youtu.be/…</p>
+      </div>
+      <div class="card">
+        <h3>What we search</h3>
+        <p style="font-family:ui-monospace,monospace;font-size:13px;color:var(--playing)">
+          Silksong</p>
+      </div>
+    </div>
+    <p style="margin-top:22px;font-size:16px">Bracketed tags, hype words, and 50+ noise
+      phrases stripped — but biased toward <strong>under</strong>-cleaning, because search
+      tolerates extra words far better than a butchered title. Steam URLs resolve exactly
+      from the slug. <em>10 unit tests against real share payloads.</em></p>
+    <div class="pagenum">05</div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="eyebrow">The feature that costs one column</div>
+    <h2>Every game remembers where you found it</h2>
+    <p class="quote">"Hollow Knight: Silksong — snagged from a YouTube video, March 4."</p>
+    <p style="margin-top:26px">Six months later, that reads like a record of your own
+      taste. The same row without it reads like homework.</p>
+    <div class="pagenum">06</div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="eyebrow">Design thesis</div>
+    <h2>A backlog is guilt made visible</h2>
+    <p>Every "pile of shame" joke is a user telling you their tracker made them feel bad.
+      So Snag is designed against the genre's own instincts:</p>
+    <ul>
+      <li><strong>No completion percentage.</strong> No progress rings, no "47 unplayed"
+        counter, no red badges, no overdue states.</li>
+      <li><strong>Near-black, art-forward.</strong> Cover art is the most beautiful thing
+        on screen and we didn't draw it. The UI gets out of its way.</li>
+      <li><strong>"Bounced," not "Abandoned."</strong> It's what players actually say, and
+        it puts the mismatch on the game rather than the person.</li>
+      <li><strong>One urgent colour in the system</strong> — reserved for the single
+        genuinely happy action: snagging something new.</li>
+    </ul>
+    <div class="pagenum">07</div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="eyebrow">The app</div>
+    <h2>A gallery, not a ledger</h2>
+    <div class="shots">
+      <figure><img src="docs/screenshots/01-pile.png" alt="The pile: saved games with provenance lines"><figcaption>Your pile</figcaption></figure>
+      <figure><img src="docs/screenshots/03-playing.png" alt="Pile filtered to games in progress"><figcaption>Filtered</figcaption></figure>
+      <figure><img src="docs/screenshots/04-detail.png" alt="Game detail with status, rating and summary"><figcaption>Detail</figcaption></figure>
+      <figure><img src="docs/screenshots/02-empty.png" alt="Empty state teaching the share gesture"><figcaption>Empty state</figcaption></figure>
+    </div>
+    <div class="pagenum">08</div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="eyebrow">Engineering</div>
+    <h2>One codebase, genuinely shared</h2>
+    <p>Compose Multiplatform — the same UI on both platforms, not a shared core with two
+      hand-written front ends. The only platform-specific UI is the capture surface,
+      because that's where the OS actually differs.</p>
+    <div class="scroll-x">
+      <table>
+        <tr><th>Concern</th><th>Choice</th></tr>
+        <tr><td>UI</td><td>Compose Multiplatform 1.11 · Kotlin 2.3</td></tr>
+        <tr><td>Storage</td><td>SQLDelight — local-first, snags work offline</td></tr>
+        <tr><td>Catalogue</td><td>IGDB, via a Cloudflare Worker</td></tr>
+        <tr><td>Alerts</td><td>Worker cron sweep → OneSignal</td></tr>
+        <tr><td>Monetization</td><td>RevenueCat (<code>purchases-kmp</code>)</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:22px;font-size:16px"><strong>Why a Worker:</strong> IGDB
+      authenticates with a Twitch client secret, and a secret compiled into an app binary
+      is published, not hidden. It also flattens IGDB's nested responses, so an upstream
+      schema change is a deploy — not an app store release.</p>
+    <div class="pagenum">09</div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="eyebrow">A trick worth stealing</div>
+    <h2>Store screenshots with no emulator and no Mac</h2>
+    <p>Compose can lay out and rasterise <strong>entirely offscreen</strong> through Skia.
+      <code>./gradlew screenshots</code> renders the real composables to PNG at exactly
+      1179×2556.</p>
+    <p>Better than a mock-up, too: they come from the shipping composables, so they
+      <em>cannot</em> drift from the app.</p>
+    <div class="pagenum">10</div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <div class="eyebrow">Monetization</div>
+    <h2>The core loop is never gated</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3 style="color:var(--playing)">Free — forever</h3>
+        <p>Snag, organise, rate, and share up to 30 games. The entire product thesis,
+          uncharged.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--accent)">Pro</h3>
+        <p>An uncapped pile, and a nudge when a wishlisted game finally gets a release
+          date or lands.</p>
+      </div>
+    </div>
+    <p style="margin-top:24px">A cap-at-five paywall would convert better. It would also
+      contradict the one thing this app is for — so snagging is never interrupted by a
+      purchase prompt. <strong>30 was chosen from what real backlogs look like, not from
+      what converts.</strong></p>
+    <div class="pagenum">11</div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <div class="eyebrow">The best thing I learned</div>
+    <h2>A compiler cannot check integrations</h2>
+    <p>An audit of my own project found three features that compiled perfectly and did
+      absolutely nothing:</p>
+    <ul>
+      <li>The paywall's "Get Pro" button only closed the sheet.</li>
+      <li>Push notifications existed entirely server-side — the app could never receive one.</li>
+      <li>The API method for registering alerts was dead code.</li>
+    </ul>
+    <p style="margin-top:18px">Green build. Passing tests. Three dead features — each one
+      two correct halves that were never joined.</p>
+    <div class="pagenum">12</div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide">
+    <div class="eyebrow">Status</div>
+    <h2>Where it actually stands</h2>
+    <div style="margin:6px 0 22px">
+      <span class="tag done">Android app building</span>
+      <span class="tag done">Share-sheet capture</span>
+      <span class="tag done">Worker deployed</span>
+      <span class="tag done">Purchases + restore</span>
+      <span class="tag done">Alerts (Android)</span>
+      <span class="tag done">10/10 tests</span>
+      <span class="tag wip">iOS — written, compiling on Mac</span>
+      <span class="tag todo">Store listings</span>
+    </div>
+    <p>Open source, because the Next Gen award judges the code — and because the KMP
+      findings along the way are worth someone else's afternoon.</p>
+    <div class="pagenum">13</div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide">
+    <h1 style="font-size:clamp(38px,6.5vw,74px)">Snag it now,<br><span class="accent">play it later.</span></h1>
+    <p class="lede" style="margin-top:12px">A backlog you'll actually keep, because saving
+      a game costs you nothing.</p>
+    <p style="margin-top:30px;color:var(--text-3);font-size:15px">Built for RevenueCat
+      Shipaton 2026 · Kotlin Multiplatform · iOS + Android</p>
+    <div class="pagenum">14</div>
+  </section>
+
+</div>
+
+<div class="hint" id="hint">↑ ↓ or scroll to navigate · P to print</div>
+
+<script>
+  const deck = document.getElementById('deck');
+  const slides = [...document.querySelectorAll('.slide')];
+  const hint = document.getElementById('hint');
+
+  function current() {
+    // The slide occupying the middle of the viewport is the one being read,
+    // which is more reliable than tracking scroll offset against slide heights.
+    const mid = deck.scrollTop + deck.clientHeight / 2;
+    return slides.findIndex(s => s.offsetTop <= mid && s.offsetTop + s.offsetHeight > mid);
+  }
+
+  function go(delta) {
+    const next = Math.min(Math.max(current() + delta, 0), slides.length - 1);
+    slides[next].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  addEventListener('keydown', e => {
+    if (['ArrowDown', 'ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(1); }
+    else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(-1); }
+    else if (e.key === 'Home') { e.preventDefault(); slides[0].scrollIntoView({ behavior: 'smooth' }); }
+    else if (e.key === 'End') { e.preventDefault(); slides.at(-1).scrollIntoView({ behavior: 'smooth' }); }
+    else if (e.key.toLowerCase() === 'p') { print(); }
+    hint.classList.add('gone');
+  });
+
+  deck.addEventListener('scroll', () => hint.classList.add('gone'), { once: true });
+  setTimeout(() => hint.classList.add('gone'), 6000);
+</script>
+
+</body>
+</html>
