@@ -15,8 +15,8 @@ Two hard rules from the official rules worth re-reading before you start:
 ## 0. Confirm the name
 
 `Backlogue` is confirmed available and the rename is done throughout — package
-`com.backlogue.app`, URL scheme `backlogue://`, App Group
-`group.com.backlogue.app`. Register the store listing name early so nobody
+`com.chinesepowered.backlogue`, URL scheme `backlogue://`, App Group
+`group.com.chinesepowered.backlogue`. Register the store listing name early so nobody
 takes it while you build.
 
 ## 1. Accounts and keys
@@ -79,7 +79,7 @@ Then, in Xcode:
 2. Add a **Share Extension** target, use
    `iosApp/ShareExtension/ShareViewController.swift`.
 3. Enable **App Groups** on *both* targets with the identifier
-   `group.com.backlogue.app` — capture silently does nothing if these do not match.
+   `group.com.chinesepowered.backlogue` — capture silently does nothing if these do not match.
 4. Register the `backlogue://` URL scheme on the app target.
 5. Add a `Secrets.swift` (git-ignored) providing `apiBaseUrl`,
    `revenueCatApiKey`, `oneSignalAppId`, `isDebug`.

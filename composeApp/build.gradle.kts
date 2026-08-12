@@ -148,11 +148,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.backlogue.app"
+    namespace = "com.chinesepowered.backlogue"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.backlogue.app"
+        applicationId = "com.chinesepowered.backlogue"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -194,7 +194,7 @@ android {
 sqldelight {
     databases {
         create("BacklogueDatabase") {
-            packageName.set("com.backlogue.app.db")
+            packageName.set("com.chinesepowered.backlogue.db")
         }
     }
 }
@@ -214,7 +214,7 @@ tasks.register<JavaExec>("screenshots") {
     val jvmCompilation = kotlin.jvm().compilations.getByName("main")
     dependsOn(jvmCompilation.compileTaskProvider)
 
-    mainClass.set("com.backlogue.app.screenshots.ScreenshotGeneratorKt")
+    mainClass.set("com.chinesepowered.backlogue.screenshots.ScreenshotGeneratorKt")
     classpath = files(
         jvmCompilation.output.allOutputs,
         jvmCompilation.runtimeDependencyFiles,

@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Backlogue icon source</title>
+<style>
+  /* Source of truth for the raster store assets. Rendered to PNG by
+     tools/render-store-assets.mjs — edit here, re-run that, never hand-edit the
+     PNGs. Square icons carry no alpha and no rounded corners: both stores apply
+     their own mask, and baking one in produces a visible double-rounded edge. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #fff; }
+  .canvas {
+    background: #0E0B14;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  #icon { width: 1024px; height: 1024px; }
+  #feature { width: 1024px; height: 500px; }
+
+  .stack { display: flex; flex-direction: column; gap: 58px; }
+  .bar { height: 124px; border-radius: 48px; }
+  .b1 { width: 512px; background: #FF5A3C; margin-left: 0; }
+  .b2 { width: 492px; background: #8B7BF7; opacity: .8; margin-left: 38px; }
+  .b3 { width: 532px; background: #5AA9E6; opacity: .55; margin-left: 10px; }
+
+  /* Feature graphic: icon at left, wordmark at right. */
+  #feature { display: flex; align-items: center; justify-content: flex-start; gap: 56px; padding: 0 72px; }
+  #feature .stack { gap: 22px; flex: 0 0 auto; }
+  #feature .bar { height: 46px; border-radius: 18px; }
+  #feature .b1 { width: 190px; }
+  #feature .b2 { width: 182px; margin-left: 14px; }
+  #feature .b3 { width: 198px; margin-left: 4px; }
+  .word { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .word h1 { font-size: 82px; font-weight: 800; letter-spacing: -.035em; color: #F5F2FA; line-height: 1; }
+  .word p { font-size: 30px; color: #A79FB8; margin-top: 16px; letter-spacing: -.01em; }
+</style>
+</head>
+<body>
+  <div class="canvas" id="icon">
+    <div class="stack">
+      <div class="bar b1"></div>
+      <div class="bar b2"></div>
+      <div class="bar b3"></div>
+    </div>
+  </div>
+
+  <div class="canvas" id="feature">
+    <div class="stack">
+      <div class="bar b1"></div>
+      <div class="bar b2"></div>
+      <div class="bar b3"></div>
+    </div>
+    <div class="word">
+      <h1>Backlogue</h1>
+      <p>Every game you meant to play.</p>
+    </div>
+  </div>
+</body>
+</html>

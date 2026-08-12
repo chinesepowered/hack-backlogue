@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  A stack of cards — the pile, which is what the app calls itself on screen.
+
+  Three bars rather than a literal game case, because the icon has to survive
+  being 48px in a drawer next to forty others. The slight horizontal jitter is
+  what makes it read as a stack instead of a signal-strength meter, and the top
+  bar carries the accent so the eye lands on the top of the pile: the next thing
+  you'd play.
+
+  Drawn inside the 66dp adaptive-icon safe zone, so no launcher mask can clip it.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- A hook catching a bookmark: "add it now, play it later". -->
+
+    <!-- Bottom: the deep backlog. Dimmest, widest. -->
+    <path
+        android:fillColor="#5AA9E6"
+        android:fillAlpha="0.55"
+        android:pathData="M27,67 h54 a5,5 0 0 1 5,5 v6 a5,5 0 0 1 -5,5 h-54 a5,5 0 0 1 -5,-5 v-6 a5,5 0 0 1 5,-5 z" />
+
+    <!-- Middle: waiting. -->
+    <path
+        android:fillColor="#8B7BF7"
+        android:fillAlpha="0.8"
+        android:pathData="M31,48 h50 a5,5 0 0 1 5,5 v6 a5,5 0 0 1 -5,5 h-50 a5,5 0 0 1 -5,-5 v-6 a5,5 0 0 1 5,-5 z" />
+
+    <!-- Top: the next one. Full accent. -->
     <path
         android:fillColor="#FF5A3C"
-        android:pathData="M42,30h24a4,4 0,0 1,4 4v40l-16,-11l-16,11V34A4,4 0,0 1,42 30z" />
-    <path
-        android:strokeColor="#FFD166"
-        android:strokeWidth="4"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000"
-        android:pathData="M54,30v-6a8,8 0,0 1,16 0" />
+        android:pathData="M26,29 h52 a5,5 0 0 1 5,5 v6 a5,5 0 0 1 -5,5 h-52 a5,5 0 0 1 -5,-5 v-6 a5,5 0 0 1 5,-5 z" />
+
 </vector>

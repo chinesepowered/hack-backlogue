@@ -16,7 +16,7 @@ final class SharedCaptureInbox {
     static let shared = SharedCaptureInbox()
 
     /// Must match the App Group capability on both the app and the extension.
-    static let appGroupId = "group.com.backlogue.app"
+    static let appGroupId = "group.com.chinesepowered.backlogue"
     private static let pendingKey = "pendingSharedText"
 
     private var defaults: UserDefaults? {

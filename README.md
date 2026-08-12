@@ -75,20 +75,20 @@ can be tested without a device or a network.
 
 ## Building
 
-**Android** (works on Linux or macOS):
+New to Kotlin, Gradle, or Xcode? **[setup.md](setup.md)** walks the whole thing
+from a fresh Mac, written for someone coming from Expo/React Native.
 
 ```bash
 echo "sdk.dir=$ANDROID_HOME" > local.properties
-./gradlew :composeApp:assembleDebug
+./gradlew :composeApp:assembleDebug     # Android app
+./gradlew :composeApp:testDebugUnitTest # tests
+./gradlew screenshots                   # store screenshots, no emulator needed
+node tools/render-store-assets.mjs      # icon + Play feature graphic
 ```
 
-**iOS** (requires macOS + Xcode): open `iosApp/iosApp.xcodeproj`.
+**iOS** requires macOS + Xcode — see [setup.md](setup.md) part 4.
 
-**Tests:**
-
-```bash
-./gradlew :composeApp:allTests
-```
+Store listing copy and assets: [docs/store/](docs/store/).
 
 ## Roadmap
 
