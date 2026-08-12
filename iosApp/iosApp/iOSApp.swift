@@ -13,7 +13,7 @@ import ComposeApp
 struct iOSApp: App {
     init() {
         KoinKt.doInitKoin(
-            config: SnagConfig(
+            config: BacklogueConfig(
                 apiBaseUrl: Secrets.apiBaseUrl,
                 revenueCatApiKey: Secrets.revenueCatApiKey,
                 oneSignalAppId: Secrets.oneSignalAppId,
@@ -27,7 +27,7 @@ struct iOSApp: App {
             ContentView()
                 .ignoresSafeArea(.all)
                 // The share extension writes into the shared app group and
-                // opens snag://capture; this is where that gets picked up.
+                // opens backlogue://capture; this is where that gets picked up.
                 .onOpenURL { url in
                     SharedCaptureInbox.shared.handle(url: url)
                 }

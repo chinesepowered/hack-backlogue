@@ -62,7 +62,7 @@ class ShareViewController: UIViewController {
     }
 
     private func openHostAppAndFinish() {
-        guard let url = URL(string: "snag://capture") else {
+        guard let url = URL(string: "backlogue://capture") else {
             extensionContext?.completeRequest(returningItems: nil)
             return
         }

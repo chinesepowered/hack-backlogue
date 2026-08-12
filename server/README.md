@@ -1,4 +1,4 @@
-# Snag API
+# Backlogue API
 
 A Cloudflare Worker doing two jobs: proxying IGDB so no secret ships inside the
 app, and running the hourly sweep that produces alerts.
@@ -34,7 +34,7 @@ That indirection pays for itself twice more:
 npm install
 
 # One-off: create the KV namespace, then paste its id into wrangler.toml
-npx wrangler kv namespace create SNAG_KV
+npx wrangler kv namespace create BACKLOGUE_KV
 
 npx wrangler secret put TWITCH_CLIENT_ID
 npx wrangler secret put TWITCH_CLIENT_SECRET
@@ -51,7 +51,7 @@ IGDB signup exists.
 Then put the deployed URL in the app's `local.properties`:
 
 ```properties
-SNAG_API_BASE_URL=https://snag-api.<your-subdomain>.workers.dev
+BACKLOGUE_API_BASE_URL=https://backlogue-api.<your-subdomain>.workers.dev
 ```
 
 ## Alert rules

@@ -18,7 +18,7 @@ export interface Env {
   TWITCH_CLIENT_SECRET: string;
   ONESIGNAL_APP_ID: string;
   ONESIGNAL_REST_API_KEY: string;
-  SNAG_KV: KVNamespace;
+  BACKLOGUE_KV: KVNamespace;
 }
 
 export interface GameRecord {
@@ -47,7 +47,7 @@ interface CachedToken {
  * to get rate limited.
  */
 async function getAccessToken(env: Env): Promise<string> {
-  const cached = await env.SNAG_KV.get<CachedToken>(TOKEN_KEY, 'json');
+  const cached = await env.BACKLOGUE_KV.get<CachedToken>(TOKEN_KEY, 'json');
   // Refresh a minute early so a token cannot expire mid-flight.
   if (cached && cached.expiresAtMs > Date.now() + 60_000) {
     return cached.token;
@@ -69,7 +69,7 @@ async function getAccessToken(env: Env): Promise<string> {
     token: body.access_token,
     expiresAtMs: Date.now() + body.expires_in * 1000,
   };
-  await env.SNAG_KV.put(TOKEN_KEY, JSON.stringify(record));
+  await env.BACKLOGUE_KV.put(TOKEN_KEY, JSON.stringify(record));
   return record.token;
 }
 

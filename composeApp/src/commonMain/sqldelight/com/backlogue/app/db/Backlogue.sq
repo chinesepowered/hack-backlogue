@@ -1,0 +1,80 @@
+-- A game the user has added, in whatever state it currently sits.
+CREATE TABLE BacklogEntry (
+    id                INTEGER NOT NULL PRIMARY KEY,
+    igdbId            INTEGER NOT NULL,
+    name              TEXT NOT NULL,
+    coverUrl          TEXT,
+    releaseDateEpoch  INTEGER,
+    summary           TEXT,
+    status            TEXT NOT NULL,
+    rating            INTEGER,
+    note              TEXT,
+    -- Where the user was standing when they added it. This is the bit that
+    -- makes the pile feel like a memory instead of a chore list.
+    sourceUrl         TEXT,
+    sourceLabel       TEXT,
+    addedAtEpoch    INTEGER NOT NULL,
+    startedAtEpoch    INTEGER,
+    finishedAtEpoch   INTEGER,
+    sortIndex         REAL NOT NULL DEFAULT 0.0
+);
+
+CREATE INDEX entry_status_idx ON BacklogEntry(status);
+CREATE UNIQUE INDEX entry_igdb_idx ON BacklogEntry(igdbId);
+
+selectAll:
+SELECT * FROM BacklogEntry ORDER BY sortIndex ASC, addedAtEpoch DESC;
+
+selectByStatus:
+SELECT * FROM BacklogEntry WHERE status = ? ORDER BY sortIndex ASC, addedAtEpoch DESC;
+
+selectById:
+SELECT * FROM BacklogEntry WHERE id = ?;
+
+selectByIgdbId:
+SELECT * FROM BacklogEntry WHERE igdbId = ?;
+
+countAll:
+SELECT count(*) FROM BacklogEntry;
+
+countByStatus:
+SELECT count(*) FROM BacklogEntry WHERE status = ?;
+
+-- id is omitted so SQLite assigns the rowid. INSERT OR IGNORE makes adding
+-- idempotent against the unique igdbId index: sharing the same game twice
+-- should be a no-op, not a duplicate row or a crash.
+insert:
+INSERT OR IGNORE INTO BacklogEntry(
+    igdbId, name, coverUrl, releaseDateEpoch, summary, status, rating, note,
+    sourceUrl, sourceLabel, addedAtEpoch, startedAtEpoch, finishedAtEpoch, sortIndex
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- Refreshes catalogue fields without touching anything the player owns
+-- (status, rating, note, provenance).
+updateCatalogueData:
+UPDATE BacklogEntry
+SET name = ?, coverUrl = ?, releaseDateEpoch = ?, summary = ?
+WHERE igdbId = ?;
+
+-- Written as an ordered LIMIT 1 rather than min() so SQLDelight generates a
+-- plain nullable Double instead of an aggregate wrapper type.
+minSortIndex:
+SELECT sortIndex FROM BacklogEntry ORDER BY sortIndex ASC LIMIT 1;
+
+updateStatus:
+UPDATE BacklogEntry SET status = ?, startedAtEpoch = ?, finishedAtEpoch = ? WHERE id = ?;
+
+updateRating:
+UPDATE BacklogEntry SET rating = ? WHERE id = ?;
+
+updateNote:
+UPDATE BacklogEntry SET note = ? WHERE id = ?;
+
+updateSortIndex:
+UPDATE BacklogEntry SET sortIndex = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM BacklogEntry WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();

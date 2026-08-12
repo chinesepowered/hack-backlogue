@@ -1,5 +1,5 @@
 {
-  "name": "snag-api",
+  "name": "backlogue-api",
   "version": "0.1.0",
   "private": true,
   "description": "IGDB proxy and alert engine for Snag",

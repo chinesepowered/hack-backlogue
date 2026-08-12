@@ -4,7 +4,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- A hook catching a bookmark: "snag it now, play it later". -->
+    <!-- A hook catching a bookmark: "add it now, play it later". -->
     <path
         android:fillColor="#FF5A3C"
         android:pathData="M42,30h24a4,4 0,0 1,4 4v40l-16,-11l-16,11V34A4,4 0,0 1,42 30z" />

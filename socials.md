@@ -1,4 +1,4 @@
-# Build in Public — Snag
+# Build in Public — Backlogue
 
 Posts for the #BuildInPublic award (1st $30k / 2nd $20k / 3rd $10k — the largest
 pool after the Grand Prize).
@@ -29,7 +29,7 @@ a number you have not measured.
 **Cadence.** 3–4 posts a week beats daily filler. Aim for: one build detail,
 one design decision, one community interaction per week, plus milestones.
 
-**Threading.** Number the main thread (`Snag devlog #1`, `#2`, …) so a judge can
+**Threading.** Number the main thread (`Backlogue devlog #1`, `#2`, …) so a judge can
 follow it in order. That single habit makes a scattered feed legible.
 
 ---
@@ -164,7 +164,7 @@ Post in order. Each is written to stand alone if a judge lands on it cold.
 
 ### D1. Opening — the thesis
 
-> Snag devlog #1
+> Backlogue devlog #1
 >
 > Building a gaming backlog app for #Shipaton2026, and starting from an
 > uncomfortable premise: **a backlog tracker is guilt made visible.**
@@ -179,7 +179,7 @@ Post in order. Each is written to stand alone if a judge lands on it cold.
 
 ### D2. The actual insight
 
-> Snag devlog #2
+> Backlogue devlog #2
 >
 > Every backlog app competes on organising games. I think that's the wrong
 > battle — the games never make it into the list in the first place.
@@ -188,19 +188,19 @@ Post in order. Each is written to stand alone if a judge lands on it cold.
 > to leave the video, open it, search, and file it. Nobody does that. That's why
 > nobody's backlog is accurate.
 >
-> So Snag lives in the share sheet. Share the video into it and the game is
+> So Backlogue lives in the share sheet. Share the video into it and the game is
 > saved before the video finishes buffering.
 >
 > The whole product is that one gesture. Everything else is bookkeeping.
 
 ### D3. The provenance feature
 
-> Snag devlog #3
+> Backlogue devlog #3
 >
 > Shipped a feature that costs one database column and might be the whole app:
 > every game remembers **where you found it**.
 >
-> "Hollow Knight: Silksong — snagged from a YouTube video, March 4."
+> "Hollow Knight: Silksong — added from a YouTube video, March 4."
 >
 > Six months later that reads like a record of your own taste. The same row
 > without it reads like homework. One column.
@@ -209,7 +209,7 @@ Post in order. Each is written to stand alone if a judge lands on it cold.
 
 ### D4. The naming decision — credit the community
 
-> Snag devlog #4
+> Backlogue devlog #4
 >
 > Asked r/patientgamers what they call games they started and didn't finish.
 > Overwhelming answer: *"I bounced off it."*
@@ -227,7 +227,7 @@ don't, post that instead — "I was wrong about this" is better content.*
 
 ### D5. The KMP finding
 
-> Snag devlog #5
+> Backlogue devlog #5
 >
 > Compose Multiplatform gotcha that cost me an hour, for the next person:
 >
@@ -242,7 +242,7 @@ don't, post that instead — "I was wrong about this" is better content.*
 
 ### D6. The screenshot trick — the cleverest thing in the build
 
-> Snag devlog #6
+> Backlogue devlog #6
 >
 > Needed App Store screenshots. No Mac free, no KVM on my build box, so no
 > emulator and no simulator.
@@ -258,7 +258,7 @@ don't, post that instead — "I was wrong about this" is better content.*
 
 ### D7. The best lesson in the whole build
 
-> Snag devlog #7
+> Backlogue devlog #7
 >
 > Today I audited my own project and found three features that compiled
 > perfectly and did absolutely nothing:
@@ -279,7 +279,7 @@ generalises — which is exactly what the brief asks for.*
 
 ### D8. The monetization decision
 
-> Snag devlog #8
+> Backlogue devlog #8
 >
 > Free tier is 30 games. I picked that number from what real backlogs look
 > like, not from what converts.
@@ -288,7 +288,7 @@ generalises — which is exactly what the brief asks for.*
 > thesis is that managing a backlog should feel enjoyable, and a paywall in the
 > middle of saving a game contradicts that in the most direct way possible.
 >
-> So snagging, organising, rating and sharing are free forever. Pro sells the
+> So adding, organising, rating and sharing are free forever. Pro sells the
 > things that only matter once you already care — an uncapped pile, and alerts
 > when a wishlisted game finally gets a date.
 >
@@ -296,7 +296,7 @@ generalises — which is exactly what the brief asks for.*
 
 ### D9. A bug worth showing
 
-> Snag devlog #9
+> Backlogue devlog #9
 >
 > Nice little self-inflicted bug: my filter chips derived their counts from the
 > already-filtered list.
@@ -309,7 +309,7 @@ generalises — which is exactly what the brief asks for.*
 
 ### D10. Design, for the design award
 
-> Snag devlog #10
+> Backlogue devlog #10
 >
 > The palette question for a backlog app: how do you visualise something most
 > people feel bad about?
@@ -317,13 +317,13 @@ generalises — which is exactly what the brief asks for.*
 > Answer I landed on — build it like a gallery, not a ledger. Near-black so the
 > cover art carries the screen. No red anywhere. The only urgent colour in the
 > entire system is the accent, and it's reserved for the one genuinely happy
-> action: snagging something new.
+> action: adding something new.
 >
 > [SCREENSHOT: 03-playing.png]
 
 ### D11. Honest progress post
 
-> Snag devlog #11
+> Backlogue devlog #11
 >
 > Status, honestly:
 >
@@ -344,12 +344,12 @@ generalises — which is exactly what the brief asks for.*
 
 ### L1. Ship post
 
-> Snag is live. 🎣
+> Backlogue is live. 🎣
 >
 > A gaming bucket list built around the moment you *discover* a game, not the
 > moment you get around to filing it.
 >
-> Share a YouTube video, a Reddit thread, or a Steam page into Snag and the game
+> Share a YouTube video, a Reddit thread, or a Steam page into Backlogue and the game
 > is in your pile in one tap — remembering where you found it.
 >
 > iOS: [LINK]
@@ -360,13 +360,13 @@ generalises — which is exactly what the brief asks for.*
 
 ### L2. Show HN
 
-> **Title:** Show HN: Snag – A gaming backlog app that lives in your share sheet
+> **Title:** Show HN: Backlogue – A gaming backlog app that lives in your share sheet
 >
 > Every backlog tracker competes on organising games. I think the real failure
 > is earlier: games never make it into the list, because saving one means
 > leaving the video you're watching, opening an app, and searching.
 >
-> Snag is an Android/iOS share target. Share a video, thread, or store page into
+> Backlogue is an Android/iOS share target. Share a video, thread, or store page into
 > it and the game is saved — the interesting part being the parser that turns
 > `"🔥 SILKSONG IS FINALLY HERE | IGN"` into a usable search query. Steam URLs
 > resolve exactly from the slug; video titles get de-noised with a bias toward
@@ -402,18 +402,18 @@ it; if not, the post still works without a link and reads far better for it.*
 # Part 4 — Reusable pieces
 
 **Bio / pinned:**
-> Building Snag — a gaming bucket list that lives in your share sheet. Kotlin
+> Building Backlogue — a gaming bucket list that lives in your share sheet. Kotlin
 > Multiplatform, iOS + Android. Building in public for #Shipaton2026.
 
 **Hashtags:** `#BuildInPublic #Shipaton2026 #KotlinMultiplatform #ComposeMultiplatform #IndieDev #GameDev`
 Two or three per post. Six reads as spam.
 
-**The one-liner:** *Snag it now, play it later.*
+**The one-liner:** *Every game you meant to play.*
 
 **The pitch, three lengths:**
 - **7 words:** A gaming bucket list for the share sheet.
-- **1 sentence:** Snag saves games at the moment you discover them — share a video or thread into it and the game lands in your pile in one tap, remembering where you found it.
-- **1 paragraph:** Every backlog app competes on organising games, but the real failure happens earlier: saving a game means leaving the video you're watching, opening an app, and searching for it. Almost nobody does that, which is why almost nobody's backlog is accurate. Snag lives in the share sheet instead, and records where each game came from — so the list reads like a record of your taste instead of a chore list.
+- **1 sentence:** Backlogue saves games at the moment you discover them — share a video or thread into it and the game lands in your pile in one tap, remembering where you found it.
+- **1 paragraph:** Every backlog app competes on organising games, but the real failure happens earlier: saving a game means leaving the video you're watching, opening an app, and searching for it. Almost nobody does that, which is why almost nobody's backlog is accurate. Backlogue lives in the share sheet instead, and records where each game came from — so the list reads like a record of your taste instead of a chore list.
 
 ---
 

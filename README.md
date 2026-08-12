@@ -1,6 +1,6 @@
-# Snag
+# Backlogue
 
-**Snag it now, play it later.** A gaming bucket list built around the one moment
+**Every game you meant to play.** A gaming bucket list built around the one moment
 every other backlog app misses: the second you *discover* a game.
 
 You are three minutes into a YouTube review, or halfway down an r/Games thread,
@@ -8,8 +8,8 @@ and something looks good. Every tracker on the market asks you to leave what you
 are doing, open an app, search for the game, and file it. Almost nobody does
 that, which is why almost nobody's backlog is accurate.
 
-Snag lives in the share sheet instead. Share the video, the thread, or the Steam
-page into Snag and the game is in your pile before the video has finished
+Backlogue lives in the share sheet instead. Share the video, the thread, or the Steam
+page into Backlogue and the game is in your pile before the video has finished
 buffering — with a note about where you found it, so six months later your list
 reads like a record of your own taste instead of a chore list.
 
@@ -38,7 +38,7 @@ badges, no overdue states. The last status is called *Bounced*, not *Abandoned*,
 because "I bounced off it" is what players actually say and it puts the mismatch
 on the game rather than the person.
 
-**Provenance as a first-class field.** Every snag records where it came from.
+**Provenance as a first-class field.** Every add records where it came from.
 This is one extra column and it is the feature that turns a list into a story.
 
 ## Architecture
@@ -47,10 +47,10 @@ This is one extra column and it is the feature that turns a list into a story.
 composeApp/
   src/
     commonMain/          Shared everything: UI, domain, data
-      kotlin/com/snag/app/
+      kotlin/com/backlogue/app/
         domain/          Models and pure logic — no framework imports
           capture/       Share-payload parsing (the core of the product)
-          model/         Game, SnaggedGame, BacklogStatus, DiscoverySource
+          model/         Game, BacklogEntry, BacklogStatus, DiscoverySource
         ui/theme/        Colour, type, shape, and motion tokens
       sqldelight/        Local database schema
     commonTest/          Pure-Kotlin tests, run on every target

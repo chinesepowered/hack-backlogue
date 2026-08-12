@@ -5,7 +5,7 @@ import Foundation
  *
  * A share extension is a separate process with its own sandbox, so it cannot
  * call into the running app. The standard route is a shared App Group container:
- * the extension writes the payload, opens `snag://capture`, and the app reads it
+ * the extension writes the payload, opens `backlogue://capture`, and the app reads it
  * on launch. That indirection is why iOS capture is native Swift on both sides
  * while Android gets away with a plain Activity.
  *
@@ -16,7 +16,7 @@ final class SharedCaptureInbox {
     static let shared = SharedCaptureInbox()
 
     /// Must match the App Group capability on both the app and the extension.
-    static let appGroupId = "group.com.snag.app"
+    static let appGroupId = "group.com.backlogue.app"
     private static let pendingKey = "pendingSharedText"
 
     private var defaults: UserDefaults? {
@@ -28,7 +28,7 @@ final class SharedCaptureInbox {
     }
 
     func handle(url: URL) {
-        guard url.scheme == "snag" else { return }
+        guard url.scheme == "backlogue" else { return }
         // The payload itself already sits in the app group; the URL is only a
         // wake-up signal, which keeps arbitrarily long shared text out of a URL.
     }

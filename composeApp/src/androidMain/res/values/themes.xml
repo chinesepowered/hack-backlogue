@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Snag" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.Backlogue" parent="android:Theme.Material.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 
-    <style name="Theme.Snag.Transparent" parent="Theme.Snag">
+    <style name="Theme.Backlogue.Transparent" parent="Theme.Backlogue">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>

@@ -16,7 +16,7 @@ interface NotificationRequest {
   subscriptionIds: string[];
   title: string;
   body: string;
-  /** Deep link target, e.g. snag://game/1030300 */
+  /** Deep link target, e.g. backlogue://game/1030300 */
   url?: string;
 }
 

@@ -2,7 +2,7 @@ import { getGame, getGames, RateLimitError, searchGames, type Env, type GameReco
 import { sendNotification } from './onesignal';
 
 /**
- * Snag's API and alert engine.
+ * Backlogue's API and alert engine.
  *
  * Two jobs. On request, it is the IGDB proxy that lets the app search without
  * shipping a secret. On a schedule, it walks the set of games players are
@@ -89,11 +89,11 @@ async function handleWatch(request: Request, env: Env): Promise<Response> {
     return error('subscriptionId required', 400);
   }
 
-  const previousRaw = await env.SNAG_KV.get<number[]>(`watch:${subscriptionId}`, 'json');
+  const previousRaw = await env.BACKLOGUE_KV.get<number[]>(`watch:${subscriptionId}`, 'json');
   const previous = new Set(previousRaw ?? []);
   const next = new Set(igdbIds);
 
-  await env.SNAG_KV.put(`watch:${subscriptionId}`, JSON.stringify(igdbIds));
+  await env.BACKLOGUE_KV.put(`watch:${subscriptionId}`, JSON.stringify(igdbIds));
 
   const added = [...next].filter((id) => !previous.has(id));
   const removed = [...previous].filter((id) => !next.has(id));
@@ -108,39 +108,39 @@ async function handleWatch(request: Request, env: Env): Promise<Response> {
 
 async function addWatcher(env: Env, igdbId: number, subscriptionId: string): Promise<void> {
   const key = `watchers:${igdbId}`;
-  const current = (await env.SNAG_KV.get<string[]>(key, 'json')) ?? [];
+  const current = (await env.BACKLOGUE_KV.get<string[]>(key, 'json')) ?? [];
   if (!current.includes(subscriptionId)) {
     current.push(subscriptionId);
-    await env.SNAG_KV.put(key, JSON.stringify(current));
+    await env.BACKLOGUE_KV.put(key, JSON.stringify(current));
     await addToIndex(env, igdbId);
   }
 }
 
 async function removeWatcher(env: Env, igdbId: number, subscriptionId: string): Promise<void> {
   const key = `watchers:${igdbId}`;
-  const current = (await env.SNAG_KV.get<string[]>(key, 'json')) ?? [];
+  const current = (await env.BACKLOGUE_KV.get<string[]>(key, 'json')) ?? [];
   const next = current.filter((id) => id !== subscriptionId);
   if (next.length === 0) {
-    await env.SNAG_KV.delete(key);
+    await env.BACKLOGUE_KV.delete(key);
     await removeFromIndex(env, igdbId);
   } else {
-    await env.SNAG_KV.put(key, JSON.stringify(next));
+    await env.BACKLOGUE_KV.put(key, JSON.stringify(next));
   }
 }
 
 const INDEX_KEY = 'watched:index';
 
 async function addToIndex(env: Env, igdbId: number): Promise<void> {
-  const index = (await env.SNAG_KV.get<number[]>(INDEX_KEY, 'json')) ?? [];
+  const index = (await env.BACKLOGUE_KV.get<number[]>(INDEX_KEY, 'json')) ?? [];
   if (!index.includes(igdbId)) {
     index.push(igdbId);
-    await env.SNAG_KV.put(INDEX_KEY, JSON.stringify(index));
+    await env.BACKLOGUE_KV.put(INDEX_KEY, JSON.stringify(index));
   }
 }
 
 async function removeFromIndex(env: Env, igdbId: number): Promise<void> {
-  const index = (await env.SNAG_KV.get<number[]>(INDEX_KEY, 'json')) ?? [];
-  await env.SNAG_KV.put(INDEX_KEY, JSON.stringify(index.filter((id) => id !== igdbId)));
+  const index = (await env.BACKLOGUE_KV.get<number[]>(INDEX_KEY, 'json')) ?? [];
+  await env.BACKLOGUE_KV.put(INDEX_KEY, JSON.stringify(index.filter((id) => id !== igdbId)));
 }
 
 interface GameSnapshot {
@@ -158,7 +158,7 @@ interface GameSnapshot {
  * muted and never opened again.
  */
 async function runAlertSweep(env: Env): Promise<void> {
-  const index = (await env.SNAG_KV.get<number[]>(INDEX_KEY, 'json')) ?? [];
+  const index = (await env.BACKLOGUE_KV.get<number[]>(INDEX_KEY, 'json')) ?? [];
   if (index.length === 0) return;
 
   // IGDB caps a where-in query at 100 ids.
@@ -171,7 +171,7 @@ async function runAlertSweep(env: Env): Promise<void> {
 
 async function processGame(env: Env, game: GameRecord): Promise<void> {
   const snapshotKey = `snapshot:${game.id}`;
-  const previous = await env.SNAG_KV.get<GameSnapshot>(snapshotKey, 'json');
+  const previous = await env.BACKLOGUE_KV.get<GameSnapshot>(snapshotKey, 'json');
   const next: GameSnapshot = {
     firstReleaseDate: game.firstReleaseDate,
     notifiedReleased: previous?.notifiedReleased ?? false,
@@ -180,11 +180,11 @@ async function processGame(env: Env, game: GameRecord): Promise<void> {
   // First sight of a game is a baseline, never an alert — otherwise every
   // newly watched game would immediately fire.
   if (!previous) {
-    await env.SNAG_KV.put(snapshotKey, JSON.stringify(next));
+    await env.BACKLOGUE_KV.put(snapshotKey, JSON.stringify(next));
     return;
   }
 
-  const watchers = (await env.SNAG_KV.get<string[]>(`watchers:${game.id}`, 'json')) ?? [];
+  const watchers = (await env.BACKLOGUE_KV.get<string[]>(`watchers:${game.id}`, 'json')) ?? [];
   if (watchers.length === 0) return;
 
   const gainedDate = !previous.firstReleaseDate && !!game.firstReleaseDate;
@@ -198,7 +198,7 @@ async function processGame(env: Env, game: GameRecord): Promise<void> {
       subscriptionIds: watchers,
       title: gainedDate ? 'It finally has a date' : 'New release date',
       body: `${game.name} lands ${formatDate(game.firstReleaseDate!)}.`,
-      url: `snag://game/${game.id}`,
+      url: `backlogue://game/${game.id}`,
     });
   }
 
@@ -212,12 +212,12 @@ async function processGame(env: Env, game: GameRecord): Promise<void> {
       subscriptionIds: watchers,
       title: 'Out now',
       body: `${game.name} is out. It has been sitting in your pile.`,
-      url: `snag://game/${game.id}`,
+      url: `backlogue://game/${game.id}`,
     });
     next.notifiedReleased = true;
   }
 
-  await env.SNAG_KV.put(snapshotKey, JSON.stringify(next));
+  await env.BACKLOGUE_KV.put(snapshotKey, JSON.stringify(next));
 }
 
 function formatDate(iso: string): string {

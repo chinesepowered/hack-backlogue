@@ -1,4 +1,4 @@
-rootProject.name = "Snag"
+rootProject.name = "Backlogue"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

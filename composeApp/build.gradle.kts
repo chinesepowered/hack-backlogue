@@ -148,17 +148,17 @@ kotlin {
 }
 
 android {
-    namespace = "com.snag.app"
+    namespace = "com.backlogue.app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.snag.app"
+        applicationId = "com.backlogue.app"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "0.1.0"
 
-        buildConfigField("String", "SNAG_API_BASE_URL", "\"${secretOrEmpty("SNAG_API_BASE_URL")}\"")
+        buildConfigField("String", "BACKLOGUE_API_BASE_URL", "\"${secretOrEmpty("BACKLOGUE_API_BASE_URL")}\"")
         buildConfigField("String", "REVENUECAT_ANDROID_KEY", "\"${secretOrEmpty("REVENUECAT_ANDROID_KEY")}\"")
         buildConfigField("String", "ONESIGNAL_APP_ID", "\"${secretOrEmpty("ONESIGNAL_APP_ID")}\"")
     }
@@ -193,8 +193,8 @@ android {
 
 sqldelight {
     databases {
-        create("SnagDatabase") {
-            packageName.set("com.snag.app.db")
+        create("BacklogueDatabase") {
+            packageName.set("com.backlogue.app.db")
         }
     }
 }
@@ -208,13 +208,13 @@ dependencies {
  * No emulator, no device, no Mac — `./gradlew screenshots`.
  */
 tasks.register<JavaExec>("screenshots") {
-    group = "snag"
+    group = "backlogue"
     description = "Render App Store / Play Store screenshots to build/screenshots"
 
     val jvmCompilation = kotlin.jvm().compilations.getByName("main")
     dependsOn(jvmCompilation.compileTaskProvider)
 
-    mainClass.set("com.snag.app.screenshots.ScreenshotGeneratorKt")
+    mainClass.set("com.backlogue.app.screenshots.ScreenshotGeneratorKt")
     classpath = files(
         jvmCompilation.output.allOutputs,
         jvmCompilation.runtimeDependencyFiles,

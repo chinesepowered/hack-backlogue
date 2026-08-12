@@ -1,4 +1,4 @@
-name = "snag-api"
+name = "backlogue-api"
 main = "src/index.ts"
 compatibility_date = "2026-08-01"
 
@@ -10,7 +10,7 @@ compatibility_date = "2026-08-01"
 crons = ["0 * * * *"]
 
 [[kv_namespaces]]
-binding = "SNAG_KV"
+binding = "BACKLOGUE_KV"
 id = "REPLACE_WITH_KV_NAMESPACE_ID"
 
 # Secrets are never listed here. Set them with:

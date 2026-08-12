@@ -1,4 +1,4 @@
-# Shipping Snag
+# Shipping Backlogue
 
 Everything that cannot be done from a Linux CI container, in the order it
 unblocks the most work. Deadline is **September 30, 2026, 11:45pm PDT**.
@@ -14,9 +14,10 @@ Two hard rules from the official rules worth re-reading before you start:
 
 ## 0. Confirm the name
 
-`Snag` and `com.snag.app` are placeholders I chose. Check availability on both
-stores and swap now if you want something else — it is a find-and-replace today
-and a nightmare once listings exist.
+`Backlogue` is confirmed available and the rename is done throughout — package
+`com.backlogue.app`, URL scheme `backlogue://`, App Group
+`group.com.backlogue.app`. Register the store listing name early so nobody
+takes it while you build.
 
 ## 1. Accounts and keys
 
@@ -38,7 +39,7 @@ through it. See [`server/README.md`](server/README.md). Roughly:
 ```bash
 cd server
 npm install
-npx wrangler kv namespace create SNAG_KV   # paste the id into wrangler.toml
+npx wrangler kv namespace create BACKLOGUE_KV   # paste the id into wrangler.toml
 npx wrangler secret put TWITCH_CLIENT_ID
 npx wrangler secret put TWITCH_CLIENT_SECRET
 npx wrangler secret put ONESIGNAL_APP_ID
@@ -46,7 +47,7 @@ npx wrangler secret put ONESIGNAL_REST_API_KEY
 npm run deploy
 ```
 
-Verify: `curl https://snag-api.<subdomain>.workers.dev/v1/health` → `{"ok":true}`
+Verify: `curl https://backlogue-api.<subdomain>.workers.dev/v1/health` → `{"ok":true}`
 
 ## 3. Fill in `local.properties`
 
@@ -54,7 +55,7 @@ Git-ignored, never committed:
 
 ```properties
 sdk.dir=/Users/you/Library/Android/sdk
-SNAG_API_BASE_URL=https://snag-api.<subdomain>.workers.dev
+BACKLOGUE_API_BASE_URL=https://backlogue-api.<subdomain>.workers.dev
 REVENUECAT_ANDROID_KEY=goog_xxx
 ONESIGNAL_APP_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
@@ -78,8 +79,8 @@ Then, in Xcode:
 2. Add a **Share Extension** target, use
    `iosApp/ShareExtension/ShareViewController.swift`.
 3. Enable **App Groups** on *both* targets with the identifier
-   `group.com.snag.app` — capture silently does nothing if these do not match.
-4. Register the `snag://` URL scheme on the app target.
+   `group.com.backlogue.app` — capture silently does nothing if these do not match.
+4. Register the `backlogue://` URL scheme on the app target.
 5. Add a `Secrets.swift` (git-ignored) providing `apiBaseUrl`,
    `revenueCatApiKey`, `oneSignalAppId`, `isDebug`.
 6. Link the `ComposeApp` framework produced by Gradle.
@@ -138,7 +139,7 @@ scores what they can see.
 ## 8. The demo video
 
 Two minutes, and the first fifteen seconds decide it. Open inside a YouTube
-video, share into Snag, show the game landing. That is the entire pitch and
+video, share into Backlogue, show the game landing. That is the entire pitch and
 every other tracker's video cannot show it.
 
 Then: the pile, a status change, a rating, and the provenance line six months
