@@ -47,7 +47,7 @@ This is one extra column and it is the feature that turns a list into a story.
 composeApp/
   src/
     commonMain/          Shared everything: UI, domain, data
-      kotlin/com/backlogue/app/
+      kotlin/com/chinesepowered/backlogue/
         domain/          Models and pure logic — no framework imports
           capture/       Share-payload parsing (the core of the product)
           model/         Game, BacklogEntry, BacklogStatus, DiscoverySource
