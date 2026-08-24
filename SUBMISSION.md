@@ -125,6 +125,12 @@ is allowed per project** — Gaming is the one.
 - [ ] Keep Them Coming Back (OneSignal)
 - [ ] HAMM
 
+Devpost copy is pre-written: the public description in
+[docs/devpost.md](docs/devpost.md), the private judge answers in
+[docs/devpost-additional.md](docs/devpost-additional.md). **Read the portfolio
+conflicts section first** — Design, HAMM and #BuildInPublic overlap with the
+other Shipaton entries.
+
 Required attachments: text description, **demo video under 2 minutes** on
 YouTube or Vimeo, store listing URL, 1024×1024 icon, ≥1 screenshot at
 1179×2556, and either a free trial or a promo code so judges can reach Pro.
