@@ -127,9 +127,8 @@ is allowed per project** — Gaming is the one.
 
 Devpost copy is pre-written: the public description in
 [docs/devpost.md](docs/devpost.md), the private judge answers in
-[docs/devpost-additional.md](docs/devpost-additional.md). **Read the portfolio
-conflicts section first** — Design, HAMM and #BuildInPublic overlap with the
-other Shipaton entries.
+[docs/devpost-additional.md](docs/devpost-additional.md). The blanks that still
+need values are marked with a warning sign in both.
 
 Required attachments: text description, **demo video under 2 minutes** on
 YouTube or Vimeo, store listing URL, 1024×1024 icon, ≥1 screenshot at
