@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
@@ -201,6 +202,27 @@ sqldelight {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+/**
+ * Backlogue on the desktop — the second platform.
+ *
+ * The JVM target began as a way to render store screenshots without an
+ * emulator; making it a real application costs almost nothing on top, because
+ * the UI is already shared. `./gradlew :composeApp:run` launches it.
+ */
+compose.desktop {
+    application {
+        mainClass = "com.chinesepowered.backlogue.DesktopAppKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Msi, TargetFormat.Dmg, TargetFormat.Deb)
+            packageName = "Backlogue"
+            packageVersion = "1.0.0"
+            description = "Every game you meant to play."
+            vendor = "chinesepowered"
+        }
+    }
 }
 
 /**

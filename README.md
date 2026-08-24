@@ -19,16 +19,20 @@ Built for **RevenueCat Shipaton 2026**.
 
 ## Status
 
-The Android app builds and runs, the Worker deploys, and the shared Kotlin
-compiles. The iOS sources are written but have **not** been through a compiler
-yet — see [SUBMISSION.md](SUBMISSION.md) for what is left and what it needs.
+Ships on **Android and Desktop**, both building on Windows and Linux. The iOS
+sources exist and are correct but have never been compiled — Kotlin/Native's
+iOS targets require the Xcode toolchain, which is macOS-only. See
+[setup.md](setup.md) for the reasoning and [SUBMISSION.md](SUBMISSION.md) for
+what is left.
 
 ## Why it is built this way
 
 **Kotlin Multiplatform + Compose Multiplatform.** One codebase, one design
-system, genuinely shared UI on iOS and Android — not a shared core with two
-hand-written front ends. The only platform-specific UI is the share extension on
-each side, because that is where the OS actually differs.
+system, genuinely shared UI on Android and desktop — not a shared core with two
+hand-written front ends. The only platform-specific UI is the capture surface,
+because that is where the OS actually differs. Desktop is not a token target
+either: a lot of game discovery happens in a browser tab on a PC, and a backlog
+that only exists on your phone is one you have to remember to open.
 
 **Dark-first, art-forward design.** The thing being visualised here is, for most
 players, a source of low-grade guilt — every "pile of shame" joke is a user
@@ -55,7 +59,8 @@ composeApp/
       sqldelight/        Local database schema
     commonTest/          Pure-Kotlin tests, run on every target
     androidMain/         Activities, share-sheet target, Android drivers
-    iosMain/             iOS drivers and framework entry point
+    jvmMain/             Desktop app + offscreen screenshot renderer
+    iosMain/             iOS drivers and framework entry point (uncompiled)
 ```
 
 Domain logic is deliberately free of Compose, Ktor, and SQLDelight imports so it
@@ -79,14 +84,18 @@ New to Kotlin, Gradle, or Xcode? **[setup.md](setup.md)** walks the whole thing
 from a fresh Mac, written for someone coming from Expo/React Native.
 
 ```bash
-echo "sdk.dir=$ANDROID_HOME" > local.properties
-./gradlew :composeApp:assembleDebug     # Android app
+./gradlew :composeApp:run               # desktop app — fastest way to see it
+./gradlew :composeApp:assembleDebug     # Android APK
 ./gradlew :composeApp:testDebugUnitTest # tests
 ./gradlew screenshots                   # store screenshots, no emulator needed
 node tools/render-store-assets.mjs      # icon + Play feature graphic
 ```
 
-**iOS** requires macOS + Xcode — see [setup.md](setup.md) part 4.
+Requires **JDK 21** — not the JDK 25 that Android Studio bundles, which the
+Android Gradle Plugin rejects with an error message consisting solely of
+`25.0.2`.
+
+**iOS** requires macOS + Xcode — see [setup.md](setup.md) appendix A.
 
 Store listing copy and assets: [docs/store/](docs/store/).
 
@@ -103,7 +112,8 @@ Store listing copy and assets: [docs/store/](docs/store/).
 - [x] Offscreen screenshot rendering (`./gradlew screenshots`)
 - [x] Purchase and restore through RevenueCat offerings
 - [x] OneSignal registration and release alerts (Android; iOS pending)
-- [ ] iOS: compile, Xcode targets, Share Extension, OneSignal SPM
+- [x] Desktop app (`./gradlew :composeApp:run`)
+- [ ] iOS — blocked on macOS, see setup.md appendix A
 - [ ] Price-drop alerts (needs a pricing source IGDB does not provide)
 - [ ] Store listings and submission
 

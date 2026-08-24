@@ -62,33 +62,28 @@ ONESIGNAL_APP_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 `./gradlew :composeApp:assembleDebug` should now give you a working Android app.
 
-## 4. iOS — the part with real unknowns
+## 4. Platforms — Android and Desktop
 
-The shared Kotlin and the Swift sources are written, but **nothing on the iOS
-side has ever been through a compiler** — this container is Linux. Expect
-friction here and budget a day.
+**iOS is out of scope.** Kotlin/Native's iOS targets need the Xcode toolchain,
+which is macOS-only, and the build machine is Windows. This costs nothing on the
+publication rules — the Shipaton accepts App Store, **Play Store**, or Galaxy
+Store — and it removes the only unverified code in the project.
 
-```bash
-./gradlew :composeApp:compileKotlinIosSimulatorArm64   # do this first
+The Ship Kotlin Everywhere award counts Android, iOS, **desktop**, and web, and
+JetBrains state that judges "reward effective cross-platform development, not
+platform count alone." So the entry is Android + Desktop, sharing one Compose
+Multiplatform UI.
+
+```powershell
+./gradlew :composeApp:run          # desktop app
+./gradlew :composeApp:packageMsi   # desktop installer, if you want to ship it
 ```
 
-Then, in Xcode:
+Ship the desktop build as a GitHub release asset and link it from the Devpost
+entry — it is the cheapest possible proof that the multiplatform claim is real.
 
-1. Create an iOS App target in `iosApp/`, add the Swift files from
-   `iosApp/iosApp/`.
-2. Add a **Share Extension** target, use
-   `iosApp/ShareExtension/ShareViewController.swift`.
-3. Enable **App Groups** on *both* targets with the identifier
-   `group.com.chinesepowered.backlogue` — capture silently does nothing if these do not match.
-4. Register the `backlogue://` URL scheme on the app target.
-5. Add a `Secrets.swift` (git-ignored) providing `apiBaseUrl`,
-   `revenueCatApiKey`, `oneSignalAppId`, `isDebug`.
-6. Link the `ComposeApp` framework produced by Gradle.
-
-**The known risk:** `purchases-kmp` 3.x moved its iOS integration to
-Gradle-managed Swift Package dependencies. If the framework link fails, that is
-the first place to look, and it is a documented setup change rather than a bug
-in this project.
+If you later get time on a Mac, `setup.md` appendix A picks iOS up; the sources
+are still there and still correct.
 
 ## 5. RevenueCat dashboard
 
@@ -122,7 +117,8 @@ One project, entered into every category below. **Only one Influencer category
 is allowed per project** — Gaming is the one.
 
 - [ ] Influencer — Gaming (Mr Lewis Blogs Gaming)
-- [ ] Ship Kotlin Everywhere (JetBrains)
+- [ ] Ship Kotlin Everywhere (JetBrains) — lead with Android + Desktop from one
+      Compose UI, and link the desktop build
 - [ ] RevenueCat Design Award
 - [ ] Next Gen (student — needs your ccsf.edu address and a public repo)
 - [ ] #BuildInPublic
@@ -156,13 +152,14 @@ on. Save the paywall for last or skip it.
 
 ## Known gaps — read this before submitting
 
-- **iOS push does not register.** OneSignal's iOS SDK is a Swift package with
-  no Kotlin bindings, so `Modules.ios.kt` binds `NoPushRegistrar`. Android
-  registers and receives; iOS needs the OneSignal SPM dependency added in Xcode
-  and a Swift-backed `PushRegistrar`. Everything above that seam already works.
-- **Nothing on iOS has been compiled.** Kotlin/Native iOS targets require the
-  Xcode toolchain, which exists only on macOS, so no amount of CI effort can
-  cover this — it has to happen on your Mac.
+- **Purchases have never executed.** The code compiles and the flow is wired,
+  but a real purchase needs a real Play Console product. Test on a device before
+  submitting — a reviewer will press that button.
+- **Desktop has no purchases and no push,** by construction: there is no store
+  and no notification service. `createProAccess` returns the free-tier stub and
+  `NoPushRegistrar` is bound. The desktop build is the free tier, which is a
+  coherent product rather than a broken one.
+- **Nothing on iOS has been compiled** and it is out of scope — see section 4.
 
 Also deliberately out of scope: **price-drop alerts**. The Worker handles
 release dates and launches, which need only IGDB. Real price tracking needs a
