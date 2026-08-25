@@ -16,3 +16,8 @@ xcuserdata/
 node_modules/
 .dev.vars
 .wrangler/
+
+# Signing — never commit these
+*.jks
+*.keystore
+keystore.properties

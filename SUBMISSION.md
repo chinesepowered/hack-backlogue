@@ -96,6 +96,57 @@ are still there and still correct.
    non-empty. Monthly-first vs annual-first pricing is the obvious first test.
 6. Enable **Customer Center** so subscription management is self-serve.
 
+## 5b. Building the upload binary
+
+Play needs a **signed release AAB**, not the debug APK.
+
+```powershell
+./gradlew :composeApp:bundleRelease     # -> composeApp/build/outputs/bundle/release/composeApp-release.aab
+./gradlew :composeApp:assembleRelease   # -> a release APK, for sideloading and testing
+```
+
+Signing reads from the git-ignored `local.properties`; the keystore is
+`backlogue-upload.jks` at the repo root and is also git-ignored.
+
+> ### Back up the keystore now
+>
+> Copy `backlogue-upload.jks` and its password somewhere outside this repo — a
+> password manager is ideal. With Play App Signing enabled, a lost *upload* key
+> can be reset by Google support, but it is days of waiting during a hackathon.
+> The file is git-ignored, so cloning the repo elsewhere will not bring it.
+
+**The binary is only as configured as `local.properties` was when it was built.**
+Empty values compile fine and produce an app whose search says "Search isn't set
+up", with no purchases and no alerts. Confirm all four keys are filled and
+rebuild before the upload that actually goes to production.
+
+**`versionCode` must increase on every upload.** It is `1` in
+`composeApp/build.gradle.kts`; Play rejects a re-used value.
+
+### Verifying before upload
+
+```powershell
+$BT = "$env:LOCALAPPDATA\Android\Sdkuild-tools.0.0"
+& "$BTpksigner.bat" verify --print-certs composeAppuild\outputspkelease\composeApp-release.apk
+```
+
+Should print `CN=Backlogue`. If it prints `CN=Android Debug`, the signing config
+did not apply and Play will reject the upload.
+
+**R8 is the real risk in a release build**, because every failure it causes is
+invisible in debug: a missing keep rule does not fail the build, it produces an
+app that installs, launches, and then throws when it deserialises a search
+result. `composeApp/proguard-rules.pro` keeps the reflective surfaces —
+serializers, navigation routes, Koin construction, the domain model. After
+changing it, check the classes survived:
+
+```powershell
+Select-String -Path composeAppuild\outputs\mappingelease\mapping.txt -Pattern 'GameDto|DetailRoute|BacklogEntry'
+```
+
+And install the release APK on a device and run a search. Debug builds never
+exercise any of this.
+
 ## 6. Store listings
 
 Both stores need:

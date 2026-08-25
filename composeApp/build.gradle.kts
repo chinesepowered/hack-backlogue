@@ -167,6 +167,30 @@ android {
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
+    /**
+     * Release signing, read from the git-ignored local.properties.
+     *
+     * Configured only when a keystore is actually present, so a fresh clone
+     * still builds debug and runs tests without one. An unsigned release build
+     * is a clearer failure than one silently signed with the debug key, which
+     * Play rejects only at upload with a message about the wrong certificate.
+     */
+    val releaseStore = secretOrEmpty("RELEASE_STORE_FILE")
+        .takeIf { it.isNotBlank() }
+        ?.let { rootProject.file(it) }
+        ?.takeIf { it.exists() }
+
+    signingConfigs {
+        if (releaseStore != null) {
+            create("release") {
+                storeFile = releaseStore
+                storePassword = secretOrEmpty("RELEASE_STORE_PASSWORD")
+                keyAlias = secretOrEmpty("RELEASE_KEY_ALIAS")
+                keyPassword = secretOrEmpty("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -175,6 +199,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            if (releaseStore != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug {
             applicationIdSuffix = ".debug"
