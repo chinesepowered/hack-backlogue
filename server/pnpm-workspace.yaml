@@ -1,0 +1,12 @@
+allowBuilds:
+  esbuild: set this to true or false
+  sharp: set this to true or false
+  workerd: set this to true or false
+# wrangler bundles the Worker with esbuild and runs it locally with workerd;
+# both fetch a platform binary in a postinstall script. pnpm 11 refuses to run
+# install scripts unless they are allowlisted here, and treats the refusal as a
+# hard error, so without this the install fails outright.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
+  - sharp

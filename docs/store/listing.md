@@ -25,7 +25,7 @@ screenshots with `./gradlew screenshots`.
 Every game you meant to play
 ```
 
-**Play Store short description** (80 char limit — this is 76):
+**Play Store short description** (80 char limit — this is 73):
 ```
 Save games the moment you find them. Share a video in, it's in your pile.
 ```

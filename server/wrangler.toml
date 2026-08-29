@@ -11,7 +11,7 @@ crons = ["0 * * * *"]
 
 [[kv_namespaces]]
 binding = "BACKLOGUE_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "8e567bcb486044ea92a0cf24709ae68d"
 
 # Secrets are never listed here. Set them with:
 #   wrangler secret put TWITCH_CLIENT_ID
