@@ -50,6 +50,22 @@ permissions. It stays 404 until *both* halves are done.
 
 On a corporate network, `NODE_OPTIONS=--use-system-ca` if TLS fails.
 
+## Why each script repeats the auth block
+
+Every `play-*.mjs` carries its own copy of the service-account JWT signing and
+the `api()` wrapper — about sixty duplicated lines each. That is deliberate, and
+it matches the sibling projects.
+
+These scripts get copied between app repos that share no package: `play-setup.mjs`
+in the Secret Fantasy repo says outright *"when IAP lands, copy the subscription
+setup from mobile-aidetect"*. A script that needs a `lib/` next to it stops being
+copyable. Deduplicating costs the one property these files are actually
+optimised for.
+
+The tradeoff is real though: a fix to the auth block has to be applied four
+times here, and copies in other repos will drift. Given how rarely that code
+changes, and how often these get copied, portability wins.
+
 ## Notes worth reading before running
 
 **`play-iap-setup.mjs`** carries a pricing lesson from the sibling repo:
