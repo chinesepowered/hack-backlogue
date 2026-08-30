@@ -39,7 +39,7 @@ store categories.
 | Google Play | ⚠️ `https://play.google.com/store/apps/details?id=com.chinesepowered.backlogue` — confirm live before pasting |
 | App Store | Blank — iOS out of scope, see below |
 | Samsung Galaxy Store | Blank |
-| Next Gen repo / student email | ⚠️ `[REPO URL]` / `clai74@mail.ccsf.edu` |
+| Next Gen repo / student email | https://github.com/chinesepowered/hack-backlogue / `clai74@mail.ccsf.edu` |
 
 **Why no iOS:** the build machine is Windows, and Kotlin/Native's iOS targets
 require the Xcode toolchain, which is macOS-only. The Shipaton accepts Play Store
@@ -162,7 +162,8 @@ the app rather than a screenshot of a list.
 
 ## Next Gen (student)
 
-⚠️ Student email `clai74@mail.ccsf.edu` (City College of San Francisco). Repo `[REPO URL]`,
+Student email `clai74@mail.ccsf.edu` (City College of San Francisco). Repo
+https://github.com/chinesepowered/hack-backlogue,
 MIT licensed.
 
 Judged on the code, so what is worth reading:
@@ -339,7 +340,9 @@ other backlog tracker is structurally incapable of filming it.
 ## Before you paste
 
 - [ ] Play listing live; URL confirmed
-- [ ] Repo public (Next Gen judges the code)
+- [ ] Make **hack-backlogue** public (Next Gen judges the code) — not the
+      older `hack-ship` repo, which still holds pre-rewrite history and
+      should stay private
 - [ ] Demo video: share into the app in the first 15 seconds, Pro shown within 3 minutes
 - [ ] Promo code generated
 - [ ] RevenueCat project ID filled

@@ -142,7 +142,7 @@ physically cannot drift from the app.
 ## Open source
 
 The whole thing: app, Worker, design system, and the parser.
-⚠️ `[REPO URL]`
+https://github.com/chinesepowered/hack-backlogue
 
 ---
 
