@@ -7,7 +7,8 @@ Assets live alongside this file:
 
 | File | Use |
 | --- | --- |
-| `icon-1024.png` | App Store + Play icon. 1024×1024, no alpha, no rounded corners. |
+| `icon-1024.png` | App Store icon, and the source for the Play one. 1024×1024, no alpha, no rounded corners. |
+| `icon-512.png` | Play Store icon. 512×512 — Play rejects any other size, including 1024. Downscaled from `icon-1024.png`. |
 | `feature-1024x500.png` | Play Store feature graphic (required). |
 | `../screenshots/*.png` | 1179×2556, no device frame. Devpost requires ≥1 at this size. |
 
@@ -108,6 +109,16 @@ playing, and stop losing the ones you meant to get to.
 
 ---
 
+## Contact
+
+**Developer contact email (both stores):** `nelson@chinesepowered.com`
+
+Play will not publish without it. `scripts/play-setup.mjs` sets it on the Play
+listing; the same address is the data-deletion contact in the privacy policy
+below, and the two have to match.
+
+---
+
 ## Category and age rating
 
 | Field | Value |
@@ -149,13 +160,22 @@ history, advertising identifiers. There is no analytics SDK and no ad SDK.
 
 ### Play Data Safety answers
 
+Filled by `scripts/fill-data-safety.mjs` — Play accepts this form only as a CSV
+round-trip through the console, so export the CSV first and import the filled
+one back. If you change an answer here, change it there.
+
 - Data collected: **Device or other IDs** → purpose *App functionality*, not
   shared, not required
 - Data collected: **App activity → Other actions** (saved game ids) → purpose
-  *App functionality*
+  *App functionality*, not shared, not required
+- Data collected: **Financial info → Purchase history** → purpose *App
+  functionality*, not shared. The app itself never sends this, but RevenueCat
+  handles purchase tokens as our service provider, and Play counts a service
+  provider as collection.
 - Encrypted in transit: **Yes**
-- Users can request deletion: **Yes** — uninstalling stops registration, and the
-  server drops a device when it re-registers with an empty list
+- Users can request deletion: **Yes** — the contact address above, and
+  uninstalling stops registration outright (the server drops a device when it
+  re-registers with an empty list)
 
 ### Privacy policy
 
@@ -181,7 +201,7 @@ Game information comes from IGDB (igdb.com).
 Backlogue contains no advertising and no analytics.
 
 Uninstalling the app stops all data collection. To have server-side data
-removed, contact [YOUR EMAIL].
+removed, contact nelson@chinesepowered.com.
 
 Last updated: [DATE]
 ```
@@ -225,7 +245,7 @@ Optional on both stores, but they lift conversion. If you add text overlays:
 
 - [ ] Screenshots regenerated after any UI change (`./gradlew screenshots`)
 - [ ] Icon has no alpha channel — already true of `icon-1024.png`, verify if you
-      edit it
+      edit it, and re-cut `icon-512.png` from it
 - [ ] Privacy policy URL is live and public
 - [ ] A **promo code** generated for Devpost judges so they can reach Pro
 - [ ] Purchase tested on a real device, not a simulator

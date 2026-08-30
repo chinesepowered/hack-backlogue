@@ -1,8 +1,12 @@
 // Uploads Backlogue's listing graphics to Google Play.
 //
-//   docs/store/icon-1024.png          -> icon              (1024x1024, no alpha)
+//   docs/store/icon-512.png           -> icon              (512x512, no alpha)
 //   docs/store/feature-1024x500.png   -> featureGraphic    (1024x500, required)
 //   docs/screenshots/*.png            -> phoneScreenshots  (in filename order)
+//
+// Play's listing icon slot is 512x512 and rejects anything else, including the
+// 1024x1024 icon the App Store wants — icon-512.png is a downscale of
+// icon-1024.png, which stays the source of truth.
 //
 // Regenerate the sources first if the UI changed:
 //   ./gradlew screenshots
@@ -140,7 +144,7 @@ const LANGUAGE = 'en-US';
 const ROOT = repoRoot();
 
 const IMAGES = [
-  { type: 'icon', file: resolve(ROOT, 'docs/store/icon-1024.png'), expect: [1024, 1024] },
+  { type: 'icon', file: resolve(ROOT, 'docs/store/icon-512.png'), expect: [512, 512] },
   { type: 'featureGraphic', file: resolve(ROOT, 'docs/store/feature-1024x500.png'), expect: [1024, 500] },
 ];
 const SHOTS_DIR = resolve(ROOT, 'docs/screenshots');
@@ -170,7 +174,7 @@ async function main() {
   for (const img of IMAGES) {
     const info = verify(img.file, img.expect);
     if (img.type === 'icon' && info.colorType === 6) {
-      throw new Error('icon-1024.png has an alpha channel; Play rejects that. Re-run tools/render-store-assets.mjs');
+      throw new Error('icon-512.png has an alpha channel; Play rejects that. Re-run tools/render-store-assets.mjs');
     }
     console.log(`  ok  ${img.type}  ${info.width}x${info.height}  colorType ${info.colorType}`);
   }

@@ -4,11 +4,13 @@ Dependency-free Node scripts (18+, plain `fetch`) that drive the Google Play and
 RevenueCat APIs. No iOS equivalents — Backlogue does not ship on iOS, see
 [setup.md](../setup.md).
 
-> **These have never been executed.** They were written against the published API
-> shapes but there is no Play app and no service account on this machine to run
-> them against. Expect to fix a field name or two on the first run, and read the
-> error rather than assuming the script is right. Everything else in this repo is
-> verified; this directory is not.
+> **Run status.** All four have now been run against the live
+> `com.chinesepowered.backlogue` app and work. Three things needed fixing on
+> that first run, and are fixed here: the Play listing icon is 512×512 and not
+> 1024, RevenueCat identifies a Play subscription as `subscriptionId:basePlanId`
+> and not by the subscription id alone, and `is_current` is read-only when
+> creating an offering. `fill-data-safety.mjs` has been exercised against a
+> synthetic export but not against a real one.
 
 ## Order
 
@@ -19,16 +21,17 @@ if run early.
 | --- | --- | --- |
 | 1 | Create the app in Play Console (manual) | — |
 | 2 | Upload the AAB to **Internal testing** (manual) | 1 |
-| 3 | `node scripts/play-setup.mjs` — listing text | 1 |
+| 3 | `node scripts/play-setup.mjs` — listing text + contact email | 1 |
 | 4 | `node scripts/play-assets.mjs` — icon, feature graphic, screenshots | 1 |
-| 5 | `node scripts/play-iap-setup.mjs` — the subscription | **2** |
-| 6 | `node scripts/revenuecat-setup.mjs` — product, entitlement, offering | 5 |
-| 7 | Put the `goog_` key in `local.properties`, rebuild | 6 |
+| 5 | `node scripts/fill-data-safety.mjs` — Data safety CSV | 1 |
+| 6 | `node scripts/play-iap-setup.mjs` — the subscription | **2** |
+| 7 | `node scripts/revenuecat-setup.mjs` — product, entitlement, offering | 6 |
+| 8 | Put the `goog_` key in `local.properties`, rebuild | 7 |
 
 **Step 2 is not optional and not obvious.** Play refuses to create in-app
 products until it has seen an upload carrying `com.android.vending.BILLING`. The
 bundle already has it (RevenueCat's SDK merges it in), but until something is
-uploaded, step 5 fails in a way that looks like a wrong package name.
+uploaded, step 6 fails in a way that looks like a wrong package name.
 
 ## Credentials
 
@@ -38,6 +41,15 @@ Nothing here reads a committed secret.
 | --- | --- | --- |
 | `play-*.mjs` | Google Cloud service account JSON with Play Console access | `GOOGLE_APPLICATION_CREDENTIALS`, else `../_android/play-service-account.json` |
 | `revenuecat-setup.mjs` | RevenueCat **secret** v2 key (`sk_…`) + project id | `REVENUECAT_SECRET_KEY` / `REVENUECAT_PROJECT_ID`, else `../_revenuecat/backlogue.env` |
+| `fill-data-safety.mjs` | nothing — it only rewrites a CSV | — |
+
+On the machine these were last run from, the Play service account is the one the
+sibling projects share, at `../_android/revenuecat-key.json` rather than the
+default filename — so every Play call needs the env var:
+
+```
+GOOGLE_APPLICATION_CREDENTIALS=../_android/revenuecat-key.json node scripts/play-setup.mjs
+```
 
 The `../_android` and `../_revenuecat` fallbacks sit outside the repo on
 purpose, matching the sibling projects. A secret key is not the same thing as
@@ -68,11 +80,28 @@ changes, and how often these get copied, portability wins.
 
 ## Notes worth reading before running
 
+**`play-assets.mjs`** deletes existing images of each type before uploading,
+because Play appends otherwise and eventually rejects the edit. It also checks
+the icon has no alpha channel locally, since Play's rejection for that talks
+about image format rather than transparency.
+
+The listing icon is **512×512** and Play rejects anything else — the 1024 the
+App Store wants comes back as `Invalid dimensions - expected width: [512]`. So
+`docs/store/icon-512.png` is a downscale of `icon-1024.png`, which stays the
+source. Re-cut it if you change the icon.
+
+**`fill-data-safety.mjs`** does not talk to Play — the form has no API and only
+round-trips as a CSV. Export from Play Console → App content → Data safety →
+Export to CSV, run the script on it, import the result back. Always start from a
+fresh export; Google renames the schema, and the script prints anything it did
+not recognise instead of guessing an answer.
+
 **`play-iap-setup.mjs`** carries a pricing lesson from the sibling repo:
 `newRegionsConfig` alone prices only regions Play adds *later*, leaving the
 product unpurchasable in every existing one while still showing as ACTIVE. The
 script expands the USD price through `pricing:convertRegionPrices` and refuses
-to write if fewer than 100 regions come back.
+to write if fewer than 100 regions come back. On the live run that came back as
+173 regions.
 
 A subscription base plan also upserts as **DRAFT** and is not purchasable until
 activated — the script does that, but if you create one by hand in the console,
@@ -84,16 +113,14 @@ on entitlement `pro` and purchases the current offering's first package. A
 mismatch produces no error, just a paywall that never unlocks. Both ids are
 hardcoded in `ProLimits.kt`.
 
-**`play-assets.mjs`** deletes existing images of each type before uploading,
-because Play appends otherwise and eventually rejects the edit. It also checks
-the icon has no alpha channel locally, since Play's rejection for that talks
-about image format rather than transparency.
+Two API shapes bite when copying this from a gem-pack repo. A Play subscription
+is `subscriptionId:basePlanId` to RevenueCat — `backlogue_pro_monthly:monthly`,
+not `backlogue_pro_monthly` — while a one-time product uses the bare id. And
+`is_current` cannot be passed when creating an offering; the first offering in a
+project is current already, so the script checks it rather than setting it.
 
 ## Not automated
 
-- **Data safety form** — Play only accepts it as a CSV round-trip through the
-  console UI. Answers are written out in
-  [docs/store/listing.md](../docs/store/listing.md#privacy).
 - **App content declarations** — privacy policy URL, ads (none), target
   audience, content rating questionnaire.
 - **Rollout** — promoting a build from Internal testing to Production is

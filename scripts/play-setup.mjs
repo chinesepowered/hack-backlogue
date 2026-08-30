@@ -1,4 +1,5 @@
-// Sets the Google Play store listing (en-US) for Backlogue.
+// Sets the Google Play store listing (en-US) for Backlogue, plus the developer
+// contact details Play requires before an app can be published.
 //
 // Idempotent — safe to re-run. The listing text is the source of truth in
 // docs/store/listing.md; this file is where it becomes real, so if you edit one
@@ -169,6 +170,14 @@ FREE FOREVER, FOR THE PART THAT MATTERS
 Saving, organising, rating and sharing up to 30 games is free and always will be. Backlogue Pro lifts the cap and adds a nudge when a wishlisted game finally gets a release date, or the day it lands.`,
 };
 
+// Play will not let the app be published without a contact email, and the same
+// address has to appear in the privacy policy as the data-deletion contact —
+// see docs/store/listing.md.
+const DETAILS = {
+  defaultLanguage: LISTING.language,
+  contactEmail: 'nelson@chinesepowered.com',
+};
+
 function checkLimits() {
   const over = Object.entries(LIMITS)
     .filter(([field, max]) => LISTING[field].length > max)
@@ -189,9 +198,11 @@ async function main() {
   const api = client(await getToken());
   const edit = await api('POST', appPath('/edits'));
   await api('PUT', appPath(`/edits/${edit.id}/listings/${LISTING.language}`), LISTING);
+  await api('PATCH', appPath(`/edits/${edit.id}/details`), DETAILS);
   const how = await commitEdit(api, edit.id);
 
-  console.log(`\nUpdated ${LISTING.language} listing — ${how}`);
+  console.log(`\nUpdated ${LISTING.language} listing + contact details — ${how}`);
+  console.log(`  contactEmail: ${DETAILS.contactEmail}`);
   console.log('\nStill manual in Play Console:');
   console.log('  - App content declarations (privacy policy, ads, target audience)');
   console.log('  - Data safety form — see scripts/fill-data-safety.mjs');
