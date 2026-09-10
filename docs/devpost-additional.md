@@ -333,7 +333,7 @@ other backlog tracker is structurally incapable of filming it.
 
 ## Interested in the RevenueCat Growth Fund?
 
-⚠️ `[Yes / No]`
+No.
 
 ---
 

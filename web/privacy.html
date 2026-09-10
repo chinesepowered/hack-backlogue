@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Backlogue</title>
+<link rel="icon" href="icon.png" type="image/png">
+<link rel="canonical" href="https://backlogue.chinesepowered.com/privacy.html">
+<style>
+  body { margin: 0; background: #0B0910; color: #F5F2FA; font: 17px/1.7 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  main { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1 { font-size: 30px; letter-spacing: -0.02em; margin-bottom: 6px; }
+  h2 { font-size: 19px; color: #FF5A3C; margin-top: 40px; letter-spacing: -0.01em; }
+  a { color: #FF5A3C; }
+  .muted { color: #6E667F; font-size: 14px; }
+  strong { color: #FFD166; font-weight: 600; }
+  ul { padding-left: 22px; }
+  li { margin-bottom: 8px; color: #A79FB8; }
+  p { color: #A79FB8; }
+  table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #2E2839; }
+  th { color: #6E667F; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+  td { color: #A79FB8; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Backlogue — Privacy Policy</h1>
+  <p class="muted">Effective date: September 10, 2026</p>
+
+  <p>Backlogue ("the app") is a gaming backlog tracker published by Chinese Powered
+  ("we", "us"). This policy explains what data the app handles and by whom.</p>
+
+  <p>The short version: <strong>your game list lives on your device.</strong> We do run
+  one small server, and it receives two things — an anonymous notification id and the
+  catalogue ids of games you want release alerts for. There is no account, no name, no
+  email, no advertising, and no analytics.</p>
+
+  <h2>Data stored on your device only</h2>
+  <p>Your pile — the games you have added, their status (Wishlist, Backlog, Playing,
+  Beaten, Bounced), your ratings, your notes, and where you saved each game from — is
+  stored in a local database on your device. We never receive any of it. Deleting the app
+  deletes this data. (It may be included in your phone's own device backups, which follow
+  your Google backup settings.)</p>
+
+  <h2>Data sent to our server</h2>
+  <p>Backlogue uses a small Cloudflare Worker for two jobs: looking up game information,
+  and sending release alerts. Here is everything it receives.</p>
+
+  <table>
+    <tr><th>What</th><th>Why</th><th>Tied to you?</th></tr>
+    <tr><td>Your search terms</td><td>To look games up in the catalogue</td><td>No — not stored</td></tr>
+    <tr><td>An anonymous notification id from OneSignal</td><td>So an alert can reach your device</td><td>No</td></tr>
+    <tr><td>The catalogue ids of games in your pile that you have not finished</td><td>So we know which games to watch for a release date</td><td>No</td></tr>
+  </table>
+
+  <p>That is the complete list. We do not receive your name, email, contacts, location,
+  device identifiers for advertising, or the games you have already finished. There is no
+  account to attach any of it to, because the app has none.</p>
+
+  <p>If you never grant notification permission, nothing is ever registered and the server
+  only ever sees anonymous searches.</p>
+
+  <h2>Game information (IGDB)</h2>
+  <p>Game names, cover art, release dates and descriptions come from
+  <a href="https://www.igdb.com/" rel="noopener">IGDB</a>, which is operated by Twitch.
+  Requests to IGDB are made by our server, not by your device, so IGDB never sees your IP
+  address or anything about you.</p>
+
+  <h2>Purchases (RevenueCat)</h2>
+  <p>Backlogue Pro is an optional subscription processed by Google Play — we never see
+  your payment details. Purchase receipts are validated by
+  <a href="https://www.revenuecat.com/privacy" rel="noopener">RevenueCat</a>, which
+  processes a pseudonymous app-generated identifier and your purchase status in order to
+  deliver what you bought and prevent fraud. It is not linked to a name or email.</p>
+
+  <h2>Notifications (OneSignal)</h2>
+  <p>If you grant notification permission, we use
+  <a href="https://onesignal.com/privacy_policy" rel="noopener">OneSignal</a> to deliver
+  alerts. OneSignal assigns your installation a push subscription id and may process
+  device information such as device model, operating-system version, language, and IP
+  address. None of it is tied to a name, email, or account.</p>
+
+  <p>We only send an alert when something about a game in your pile actually changed: it
+  gained a release date, its date moved, or it came out. We do not send reminders about
+  unplayed games, and there are no marketing notifications.</p>
+
+  <p>Permission is not requested until your pile contains something worth being notified
+  about.</p>
+
+  <h2>Advertising and analytics</h2>
+  <p>There are none. Backlogue contains no advertising SDK and no analytics SDK. We do not
+  measure how you use the app.</p>
+
+  <h2>Children</h2>
+  <p>Backlogue is a tool for organising a list of video games and is not directed at
+  children. We do not knowingly collect data from children.</p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li><strong>Notifications:</strong> turn them off for the app in your device settings
+    at any time. That stops all alerts.</li>
+    <li><strong>Stop server-side registration:</strong> uninstalling the app stops it. The
+    server also drops a device from its watch list when that device re-registers with an
+    empty list, which happens automatically once your pile has no unfinished games.</li>
+    <li><strong>All local data:</strong> delete the app, or remove individual games from
+    your pile.</li>
+    <li><strong>Deletion request:</strong> email us at the address below and we will remove
+    any server-side record associated with your notification id.</li>
+  </ul>
+
+  <h2>Changes</h2>
+  <p>If a future version changes any of the above, this policy will be updated before that
+  version ships, with the date above revised.</p>
+
+  <h2>Contact</h2>
+  <p>Questions or requests:
+  <a href="mailto:nelson@chinesepowered.com">nelson@chinesepowered.com</a></p>
+</main>
+</body>
+</html>
