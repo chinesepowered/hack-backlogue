@@ -28,7 +28,7 @@ clears. Never publicly released before the window.
 **App type (select all that apply)** → Entertainment / Utilities, matching the
 store categories.
 
-**RevenueCat project ID** → ⚠️ `[FILL]`
+**RevenueCat project ID** → `projb3ae91a4`
 
 ---
 
@@ -345,7 +345,7 @@ No.
       should stay private
 - [ ] Demo video: share into the app in the first 15 seconds, Pro shown within 3 minutes
 - [ ] Promo code generated
-- [ ] RevenueCat project ID filled
+- [x] RevenueCat project ID filled
 - [ ] One RevenueCat Experiment running + Customer Center enabled (HAMM)
 - [ ] Build-in-public thread linked
 - [x] **OneSignal verified end to end** on an Android 36 emulator: the device
