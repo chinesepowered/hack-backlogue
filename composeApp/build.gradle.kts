@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 /**
- * Client keys live in local.properties (git-ignored) so a fresh clone builds
- * without them. The genuinely secret value — the Twitch client secret IGDB
- * requires — is never read here; it exists only in the Cloudflare Worker.
+ * Machine-specific values live in local.properties (git-ignored). The genuinely
+ * secret value — the Twitch client secret IGDB requires — is never read here;
+ * it exists only in the Cloudflare Worker.
  */
 val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
@@ -14,6 +14,22 @@ val localProperties = Properties().apply {
 
 fun secretOrEmpty(key: String): String =
     (localProperties.getProperty(key) ?: System.getenv(key) ?: "").trim()
+
+/**
+ * The RevenueCat and OneSignal client keys are committed, because both are
+ * public by design — they ship inside the APK and anyone can read them out of
+ * it. Committing them means any clean checkout builds an app with purchases
+ * and push working, instead of one that silently has both switched off.
+ *
+ * A blank value in local.properties falls through to the default rather than
+ * overriding it with nothing; the setup template ships these lines blank.
+ * The RevenueCat *secret* key (sk_) is a different thing and never goes here.
+ */
+fun clientKey(key: String, default: String): String =
+    secretOrEmpty(key).ifBlank { default }
+
+val revenueCatAndroidKey = clientKey("REVENUECAT_ANDROID_KEY", "goog_NsppzwIzwpSDYNxEtRwsLLKsgjf")
+val oneSignalAppId = clientKey("ONESIGNAL_APP_ID", "5c4fb51b-9266-4ba7-90e7-2c381417c858")
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -160,8 +176,8 @@ android {
         versionName = "0.1.0"
 
         buildConfigField("String", "BACKLOGUE_API_BASE_URL", "\"${secretOrEmpty("BACKLOGUE_API_BASE_URL")}\"")
-        buildConfigField("String", "REVENUECAT_ANDROID_KEY", "\"${secretOrEmpty("REVENUECAT_ANDROID_KEY")}\"")
-        buildConfigField("String", "ONESIGNAL_APP_ID", "\"${secretOrEmpty("ONESIGNAL_APP_ID")}\"")
+        buildConfigField("String", "REVENUECAT_ANDROID_KEY", "\"$revenueCatAndroidKey\"")
+        buildConfigField("String", "ONESIGNAL_APP_ID", "\"$oneSignalAppId\"")
     }
 
     sourceSets["main"].res.srcDirs("src/androidMain/res")
