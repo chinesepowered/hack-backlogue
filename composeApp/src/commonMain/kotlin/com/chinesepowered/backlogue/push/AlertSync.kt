@@ -65,7 +65,15 @@ class AlertSync(
     }
 
     private companion object {
-        const val RegistrationAttempts = 5
-        const val RegistrationRetryDelayMs = 1_000L
+        /**
+         * Five seconds was not enough. FCM token registration on a cold install
+         * routinely takes longer, and when this window expired the device was
+         * simply never registered — no error, no retry until the pile happened
+         * to change again, which for a settled pile is never. Thirty seconds
+         * costs nothing (it is a suspending poll on a background flow) and
+         * covers a slow first launch.
+         */
+        const val RegistrationAttempts = 12
+        const val RegistrationRetryDelayMs = 2_500L
     }
 }

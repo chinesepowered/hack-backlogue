@@ -21,3 +21,6 @@ node_modules/
 *.jks
 *.keystore
 keystore.properties
+
+# emulator verification output
+.emu-out/

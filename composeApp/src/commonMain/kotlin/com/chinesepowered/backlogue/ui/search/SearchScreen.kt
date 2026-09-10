@@ -205,7 +205,7 @@ private fun SearchResultRow(
                     tint = colors.playing,
                 )
             } else {
-                Text("Backlogue", style = BacklogueType.label, color = colors.textOnAccent)
+                Text("Add", style = BacklogueType.label, color = colors.textOnAccent)
             }
         }
     }
