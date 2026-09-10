@@ -1,7 +1,9 @@
 package com.chinesepowered.backlogue.push
 
 import android.content.Context
+import com.chinesepowered.backlogue.BuildConfig
 import com.onesignal.OneSignal
+import com.onesignal.debug.LogLevel
 
 class OneSignalPushRegistrar(private val context: Context) : PushRegistrar {
 
@@ -9,6 +11,12 @@ class OneSignalPushRegistrar(private val context: Context) : PushRegistrar {
 
     override fun start(appId: String) {
         if (started || appId.isBlank()) return
+
+        // OneSignal defaults to WARN, which means a healthy init and a silently
+        // failing one look identical in logcat — that cost a whole debugging
+        // session. Debug builds say what they are doing.
+        if (BuildConfig.DEBUG) OneSignal.Debug.logLevel = LogLevel.VERBOSE
+
         OneSignal.initWithContext(context, appId)
         started = true
     }

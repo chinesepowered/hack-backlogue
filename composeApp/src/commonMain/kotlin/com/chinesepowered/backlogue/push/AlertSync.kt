@@ -38,15 +38,27 @@ class AlertSync(
             // cold start, which is when the pile first emits.
             .debounce(2_000)
             .collect { igdbIds ->
+                log("pile changed: ${igdbIds.size} unresolved game(s)")
                 if (igdbIds.isEmpty()) return@collect
 
                 // Ask only once there is something worth being notified about.
                 // Prompting on first launch, before the user has saved a single
                 // game, is how apps get permanently denied.
-                push.requestPermission()
+                log("requesting notification permission…")
+                val granted = push.requestPermission()
+                log("permission granted=$granted")
 
-                val subscriptionId = awaitSubscriptionId() ?: return@collect
-                api.watch(subscriptionId, igdbIds)
+                val subscriptionId = awaitSubscriptionId()
+                if (subscriptionId == null) {
+                    log("no subscription id after $RegistrationAttempts attempts — not registering")
+                    return@collect
+                }
+                log("registering ${igdbIds.size} game(s) for $subscriptionId")
+                when (val result = api.watch(subscriptionId, igdbIds)) {
+                    is com.chinesepowered.backlogue.data.remote.ApiResult.Success -> log("watch registered OK")
+                    is com.chinesepowered.backlogue.data.remote.ApiResult.Failure ->
+                        log("watch FAILED: ${result.reason} ${result.message.orEmpty()}")
+                }
             }
     }
 
@@ -63,6 +75,13 @@ class AlertSync(
         }
         return null
     }
+
+    /**
+     * Deliberately plain println so it reaches logcat on Android and stdout on
+     * desktop without a logging dependency. This path failed silently twice
+     * during development — every branch through it now says what it did.
+     */
+    private fun log(message: String) = println("Backlogue/AlertSync: $message")
 
     private companion object {
         /**

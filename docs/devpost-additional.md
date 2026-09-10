@@ -348,7 +348,13 @@ No.
 - [ ] RevenueCat project ID filled
 - [ ] One RevenueCat Experiment running + Customer Center enabled (HAMM)
 - [ ] Build-in-public thread linked
-- [ ] **Verify on a physical device before submitting:** a real purchase completes
-      and unlocks Pro, and one OneSignal alert arrives end to end. Both are wired
-      and compile — which this project has already proven is not the same as
-      working. Do not claim either until you have watched it happen.
+- [x] **OneSignal verified end to end** on an Android 36 emulator: the device
+      obtained a subscription id, `AlertSync` registered it against the Worker
+      (`watch:c81a169f… -> [11737]`, with the reverse index and sweep list
+      written), and a notification sent through the OneSignal REST API was
+      received and displayed by the device.
+- [ ] **Verify a purchase on a real device before submitting.** This is the one
+      claim still resting on the compiler. It cannot be tested on an emulator —
+      it needs a Play-signed-in account — and this project has already produced
+      three features that compiled perfectly and did nothing. Do not claim the
+      paywall works until you have watched a purchase unlock Pro.
