@@ -1,20 +1,29 @@
 # Proves the shared Kotlin compiles and links for iOS.
 #
-# This is the one genuinely unverified thing about the iOS target: the Swift
-# sources and the Gradle config have existed for weeks, but no iOS compiler has
-# ever seen them, because the development machine is Windows and Kotlin/Native's
-# Apple targets require the Xcode toolchain.
+# This existed because the Swift sources and the Gradle iOS targets sat unbuilt
+# for weeks: development moved to a Windows machine, and Kotlin/Native's Apple
+# targets need the Xcode toolchain. A macOS runner settles it without a Mac.
 #
-# A macOS runner answers that for free and without needing a Mac to hand. If this
-# job is green, the remaining iOS work is Xcode project setup rather than
-# debugging Kotlin. If it is red, it is far better to know now than on a Mac at
-# the deadline.
+# It is green: ComposeApp.framework links for iosSimulatorArm64, purchases-kmp
+# included (it lives in mobileMain, which iOS compiles). What remains for iOS is
+# Xcode project packaging, not Kotlin.
+#
+# macOS runners bill at 10x minutes on private repos and this job takes ~12
+# minutes, so it does NOT run on every push — only on demand, or when something
+# that could plausibly break the iOS build changes.
 name: iOS build
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
-  workflow_dispatch:
+    paths:
+      - 'composeApp/src/commonMain/**'
+      - 'composeApp/src/iosMain/**'
+      - 'composeApp/src/mobileMain/**'
+      - 'composeApp/build.gradle.kts'
+      - 'gradle/libs.versions.toml'
+      - '.github/workflows/ios.yml'
 
 jobs:
   framework:
@@ -22,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -45,4 +54,4 @@ jobs:
       - name: Show what was produced
         run: |
           find composeApp/build/bin -name "*.framework" -maxdepth 4 -print
-          ls -la composeApp/build/bin/iosSimulatorArm64/debugFramework/ || true
+          ls -la composeApp/build/bin/iosSimulatorArm64/debugFramework/

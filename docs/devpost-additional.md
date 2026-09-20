@@ -41,11 +41,16 @@ store categories.
 | Samsung Galaxy Store | Blank |
 | Next Gen repo / student email | https://github.com/chinesepowered/hack-backlogue / `clai74@mail.ccsf.edu` |
 
-**Why no iOS:** the build machine is Windows, and Kotlin/Native's iOS targets
-require the Xcode toolchain, which is macOS-only. The Shipaton accepts Play Store
-publication alone, so this costs no eligibility. The desktop target carries the
-multiplatform claim instead, and carries it better — it is a real second
-platform running the identical UI, not a port.
+**On iOS:** the shared Kotlin **compiles and links for iOS** — CI on a macOS
+runner produces `ComposeApp.framework` for `iosSimulatorArm64`, RevenueCat
+included, since `purchases-kmp` lives in the `mobile` source set that iOS
+compiles. The iOS Swift sources and both Apple targets are in the repo and always
+were. What is not done is Xcode project packaging and an App Store release.
+
+Day-to-day development moved to a Windows machine, where Kotlin/Native cannot
+build Apple targets at all, so that work went unstarted rather than being
+attempted and abandoned. The Shipaton accepts Play Store publication alone, so
+nothing here affects eligibility.
 
 ## Promo code
 
