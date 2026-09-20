@@ -1,0 +1,48 @@
+# Proves the shared Kotlin compiles and links for iOS.
+#
+# This is the one genuinely unverified thing about the iOS target: the Swift
+# sources and the Gradle config have existed for weeks, but no iOS compiler has
+# ever seen them, because the development machine is Windows and Kotlin/Native's
+# Apple targets require the Xcode toolchain.
+#
+# A macOS runner answers that for free and without needing a Mac to hand. If this
+# job is green, the remaining iOS work is Xcode project setup rather than
+# debugging Kotlin. If it is red, it is far better to know now than on a Mac at
+# the deadline.
+name: iOS build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  framework:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # local.properties is git-ignored and carries the Android SDK path plus
+      # client keys. The iOS framework needs neither, but the Android target is
+      # configured in the same module, so sdk.dir has to resolve for the build
+      # to configure at all.
+      - name: Point at the runner's Android SDK
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - name: Compile shared Kotlin for iOS
+        run: ./gradlew :composeApp:compileKotlinIosSimulatorArm64 --no-daemon
+
+      - name: Link the ComposeApp framework
+        run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 --no-daemon
+
+      - name: Show what was produced
+        run: |
+          find composeApp/build/bin -name "*.framework" -maxdepth 4 -print
+          ls -la composeApp/build/bin/iosSimulatorArm64/debugFramework/ || true
