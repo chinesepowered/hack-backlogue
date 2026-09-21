@@ -90,7 +90,7 @@ Worth adding to the review notes anyway:
 
 > Backlogue has no account system. The free tier saves 30 games; Backlogue Pro
 > lifts that cap and enables release-date notifications. The paywall is reachable
-> from Settings at any time. A promo code for Pro is attached.
+> from the Pro badge in the pile header at any time. A promo code is attached.
 
 ### Ads
 

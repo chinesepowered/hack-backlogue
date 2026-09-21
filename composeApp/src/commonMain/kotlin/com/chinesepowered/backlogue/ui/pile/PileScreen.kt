@@ -53,6 +53,7 @@ fun PileScreen(
     viewModel: PileViewModel,
     onOpenGame: (Long) -> Unit,
     onAddGame: () -> Unit,
+    onShowPaywall: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -61,6 +62,7 @@ fun PileScreen(
         onSelectFilter = viewModel::setFilter,
         onOpenGame = onOpenGame,
         onAddGame = onAddGame,
+        onShowPaywall = onShowPaywall,
         modifier = modifier,
     )
 }
@@ -72,6 +74,9 @@ fun PileScreen(
  * database, or a coroutine that has had time to emit — which is what lets the
  * offscreen renderer produce store screenshots from the real composables
  * instead of a mock-up that drifts from the app.
+ *
+ * [onShowPaywall] defaults to a no-op so the offscreen renderer can draw this
+ * screen without wiring billing.
  */
 @Composable
 fun PileContent(
@@ -79,6 +84,7 @@ fun PileContent(
     onSelectFilter: (BacklogStatus?) -> Unit,
     onOpenGame: (Long) -> Unit,
     onAddGame: () -> Unit,
+    onShowPaywall: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = BacklogueTheme.colors
@@ -98,12 +104,20 @@ fun PileContent(
         modifier = modifier,
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Text(
-                text = "Your pile",
-                style = BacklogueType.display,
-                color = colors.textPrimary,
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 12.dp),
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Your pile",
+                    style = BacklogueType.display,
+                    color = colors.textPrimary,
+                    modifier = Modifier.weight(1f),
+                )
+                ProBadge(isPro = state.isPro, onClick = onShowPaywall)
+            }
 
             FilterRow(
                 selected = state.filter,
@@ -112,7 +126,7 @@ fun PileContent(
             )
 
             if (state.showFreeTierHint) {
-                FreeTierHint(remaining = state.remainingFreeSlots)
+                FreeTierHint(remaining = state.remainingFreeSlots, onClick = onShowPaywall)
             }
 
             when {
@@ -141,6 +155,42 @@ fun PileContent(
                 }
             }
         }
+    }
+}
+
+/**
+ * The way into the paywall, and the only one that does not require already
+ * owning thirty games.
+ *
+ * Before this existed the sole entry point was the search screen refusing a
+ * thirty-first add, which meant nobody evaluating the app — a reviewer, a
+ * judge, or a curious user — could ever see what Pro was. That is a paywall
+ * that only appears to people who are already committed, which sounds like
+ * restraint and is actually just unreachable.
+ *
+ * Kept deliberately quiet: outline and secondary text, never the accent. The
+ * accent belongs to adding a game, which is the one genuinely happy action in
+ * the app, and spending it on an upsell would undo the point.
+ */
+@Composable
+private fun ProBadge(isPro: Boolean, onClick: () -> Unit) {
+    val colors = BacklogueTheme.colors
+    Box(
+        modifier = Modifier
+            .clip(BacklogueShapes.chip)
+            .background(if (isPro) colors.accentSubtle else Color.Transparent)
+            .border(
+                BorderStroke(1.dp, if (isPro) colors.accent.copy(alpha = 0.5f) else colors.outline),
+                BacklogueShapes.chip,
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 7.dp),
+    ) {
+        Text(
+            text = "Pro",
+            style = BacklogueType.label,
+            color = if (isPro) colors.accent else colors.textSecondary,
+        )
     }
 }
 
@@ -197,8 +247,9 @@ private fun AllChip(selected: Boolean, onClick: () -> Unit) {
     }
 }
 
+/** Tappable, because a hint about a paywall that cannot open it is just a nag. */
 @Composable
-private fun FreeTierHint(remaining: Int) {
+private fun FreeTierHint(remaining: Int, onClick: () -> Unit) {
     val colors = BacklogueTheme.colors
     Text(
         text = if (remaining > 0) {
@@ -208,6 +259,8 @@ private fun FreeTierHint(remaining: Int) {
         },
         style = BacklogueType.meta,
         color = colors.textTertiary,
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 6.dp),
     )
 }

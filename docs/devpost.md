@@ -109,8 +109,8 @@ Pro lifts the cap and adds the release alerts. That's it.
 **A cap at five would convert better.** It would also contradict the only thing
 this app is for. A paywall in the middle of saving a game destroys the two
 seconds the entire product exists to protect, so the paywall appears in exactly
-two places: when the free pile is full, and from settings. Never on launch, never
-mid-capture.
+two places: the Pro badge in the pile header, and the moment the free pile is
+full. Never on launch, never mid-capture.
 
 Thirty was chosen from what real backlogs actually look like, not from what
 converts.

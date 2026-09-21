@@ -230,7 +230,8 @@ was where to draw the line rather than how hard to push it.
 **The core loop is never gated.** Adding, organising, rating and sharing up to 30
 games is free forever. A cap at five would convert better — and would contradict
 the only thing this app is for. The paywall appears in exactly two places: when
-the free pile is full, and from settings. Never on launch, never during a
+the Pro badge in the pile header, and the moment the free pile is full. Never
+on launch, never during a
 capture, because interrupting the two seconds between "that looks good" and
 "it's saved" destroys the product.
 

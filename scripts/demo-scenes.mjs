@@ -26,7 +26,13 @@ export const CAPTURE = `${APP_ID}/.capture.CaptureActivity`;
  * than a Steam URL: the parser is the interesting part and a clean title
  * demonstrates nothing.
  */
-export const SHARE_TEXT = '🔥 SILKSONG IS FINALLY HERE — First 3 Hours | IGN';
+export const SHARE_TEXT =
+  'Silksong is FINALLY here! | First Impressions https://www.youtube.com/watch?v=pFBtc9NvSjc';
+
+/** The result to pick out of the search hits. Exact text, so the two other
+ *  Silksong entries IGDB returns ("Hollow Knight Silksong", "... Sea of
+ *  Sorrow") are not matched by accident. */
+export const SHARE_PICK = 'Hollow Knight: Silksong';
 
 /**
  * Scenes, in order.
@@ -75,20 +81,34 @@ export const SCENES = [
       "One tap, and it's saved, without leaving what you were watching. " +
       'And it remembers where you found it. From a YouTube video.',
     minMs: 10_000,
-    actions: [{ wait: 3_000 }],
+    actions: [
+      { tap: SHARE_PICK },
+      { wait: 1_200 },
+      { tap: 'Add' },
+      { wait: 2_500 },
+      // CaptureActivity has no finish() after an add - it stays open showing
+      // "Already in your pile" so you can add a second game from one share.
+      // A real user backs out here, so the take does too.
+      { shell: 'input keyevent KEYCODE_BACK' },
+      { wait: 1_200 },
+      { shell: `am start -n ${MAIN}` },
+      { wait: 2_000 },
+    ],
   },
   {
     id: '03-parser',
     title: 'The parser',
     narration:
-      'That share was titled "Silksong is finally here, first three hours, IGN". ' +
-      'The hard part of this app is a text parser that strips the hype and keeps ' +
-      'the title. When it is not sure, it says so and opens a search box instead ' +
-      'of guessing.',
+      'That share was titled "Silksong is FINALLY here, first impressions". ' +
+      'The hard part of this app is a text parser that strips the hype and the ' +
+      'channel name and keeps the title. When it is not sure, it says so and ' +
+      'opens a search box instead of guessing.',
     minMs: 14_000,
     actions: [
-      { shell: `am start -n ${MAIN}` },
-      { wait: 2_000 },
+      { tap: SHARE_PICK },
+      { wait: 4_000 },
+      { shell: 'input keyevent KEYCODE_BACK' },
+      { wait: 1_500 },
     ],
   },
   {
@@ -134,11 +154,11 @@ export const SCENES = [
     // and the paywall's own design are what this scene sells; a store sheet is
     // the least interesting thing that could be on screen here.
     actions: [
-      { tap: 'Settings' },
-      { wait: 1_500 },
-      { tap: 'Backlogue Pro' },
-      { wait: 5_000 },
-      { manual: 'Dismiss onto the unlocked Pro state, alerts enabled' },
+      // The Pro badge in the pile header. Until this existed the paywall could
+      // only be reached by owning thirty games and trying to add a thirty-first,
+      // which meant no reviewer or judge could ever see it.
+      { tap: 'Pro' },
+      { wait: 6_000 },
     ],
   },
   {

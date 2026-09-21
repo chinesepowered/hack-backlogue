@@ -76,6 +76,7 @@ fun App(
                     viewModel = viewModel,
                     onOpenGame = { navController.navigate(DetailRoute(it)) },
                     onAddGame = { navController.navigate(SearchRoute) },
+                    onShowPaywall = { showPaywall = true },
                 )
             }
 

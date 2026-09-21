@@ -60,8 +60,25 @@ function argValue(flag) {
 }
 const has = (flag) => process.argv.includes(flag);
 
-const sh = (bin, args, opts = {}) =>
-  execFileSync(bin, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts });
+// Node 24 refuses to execFile a .bat or .cmd directly (the CVE-2024-27980 fix),
+// so batch wrappers like avdmanager.bat need shell:true — and then cmd.exe gets
+// to see the arguments, which matters because an sdk package id is full of
+// semicolons: system-images;android-36;google_apis;x86_64.
+const quoteForCmd = (a) => (/[\s;&|<>^"()]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a);
+
+const sh = (bin, args, opts = {}) => {
+  const isBatch = /\.(bat|cmd)$/i.test(bin);
+  return execFileSync(
+    isBatch ? quoteForCmd(bin) : bin,
+    isBatch ? args.map(quoteForCmd) : args,
+    {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      ...(isBatch ? { shell: true } : {}),
+      ...opts,
+    },
+  );
+};
 
 const adb = (...args) => sh(ADB, args);
 const adbShell = (cmd) => adb('shell', cmd);
@@ -83,16 +100,24 @@ function findSystemImage() {
   const base = join(SDK, 'system-images');
   if (!existsSync(base)) fail(`No system images under ${base}. Install one in Android Studio.`);
 
+  // An emptied-out tag directory survives `sdkmanager --uninstall`, so the
+  // presence of system-images/android-36/google_apis/ proves nothing. Only an
+  // abi directory holding a system.img is a real image.
   for (const api of readdirSync(base)) {
     for (const tag of readdirSync(join(base, api))) {
-      for (const abi of readdirSync(join(base, api, tag))) {
-        if (statSync(join(base, api, tag, abi)).isDirectory()) {
+      const tagDir = join(base, api, tag);
+      if (!statSync(tagDir).isDirectory()) continue;
+      for (const abi of readdirSync(tagDir)) {
+        if (existsSync(join(tagDir, abi, 'system.img'))) {
           return `system-images;${api};${tag};${abi}`;
         }
       }
     }
   }
-  fail(`No system image found under ${base}.`);
+  console.error(`No system image installed under ${base}.`);
+  console.error('Install one (about 1.5GB):');
+  console.error('  sdkmanager "system-images;android-36;google_apis;x86_64"');
+  process.exit(1);
 }
 
 function createAvd() {
@@ -157,6 +182,9 @@ function prepareDevice() {
     try { adbShell(cmd); } catch { /* best effort */ }
   }
   // Demo clock: a fixed, tidy status bar beats whatever time the take happens at.
+  // sysui_demo_allowed has to be set first — without it SystemUI drops every
+  // demo broadcast on the floor and the status bar just never changes.
+  try { adbShell('settings put global sysui_demo_allowed 1'); } catch {}
   try { adbShell('am broadcast -a com.android.systemui.demo -e command enter'); } catch {}
   try {
     adbShell('am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0942');

@@ -30,7 +30,7 @@ import com.chinesepowered.backlogue.ui.theme.BacklogueType
  * Written to sell the things that only matter once someone already loves the
  * app — alerts, unlimited pile, year in review — and never to gate the core
  * loop. It appears in exactly two places: when the free pile is full, and from
- * settings. It is never shown on launch, and never interrupts an add in
+ * the pile header. It is never shown on launch, and never interrupts an add in
  * progress, because the one moment this app exists to protect is the two
  * seconds between "that looks good" and "it's saved".
  */
