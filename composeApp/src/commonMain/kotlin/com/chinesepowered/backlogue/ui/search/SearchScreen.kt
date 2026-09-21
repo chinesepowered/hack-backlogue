@@ -57,15 +57,28 @@ fun SearchScreen(
     viewModel: SearchViewModel,
     onBack: () -> Unit,
     onShowPaywall: () -> Unit,
+    /** False when we arrived from a share, so the keyboard stays down. */
+    autoFocus: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val colors = BacklogueTheme.colors
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(state.candidate) {
+    // The candidate arrives a frame or two after this screen composes, so the
+    // first pass always saw null. Keying only on that meant every share popped
+    // the keyboard over the results it had just found, and nothing ever put it
+    // away again. `autoFocus` says whether we got here by choosing "Add a game"
+    // - a share passes false, and then only a parse the parser itself flagged
+    // as unsure is allowed to raise the keyboard.
+    LaunchedEffect(state.candidate, autoFocus) {
         val confidence = state.candidate?.confidence
-        if (state.candidate == null || confidence == CaptureConfidence.Low) {
+        val shouldFocus = when {
+            confidence == CaptureConfidence.Low -> true
+            state.candidate != null -> false
+            else -> autoFocus
+        }
+        if (shouldFocus) {
             runCatching { focusRequester.requestFocus() }
         }
     }

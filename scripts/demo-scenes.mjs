@@ -62,6 +62,17 @@ export const SHARE_PICK = 'Hollow Knight: Silksong';
 export const SETUP = [
   { removeIfPresent: SHARE_PICK },
   { removeIfPresent: 'Hollow Knight Silksong' },
+  // Warm the cover-art cache. On a freshly booted emulator Coil has nothing in
+  // memory and the pile records as a column of gradient placeholders, which is
+  // the one thing this app is least willing to look like.
+  { shell: `am start -n ${MAIN}` },
+  { wait: 4_000 },
+  { swipe: [540, 1800, 540, 700, 600] },
+  { wait: 3_000 },
+  { swipe: [540, 700, 540, 1800, 600] },
+  { wait: 4_000 },
+  { shell: `am force-stop ${APP_ID}` },
+  { wait: 1_000 },
   { shell: 'am force-stop com.android.chrome' },
   { shell: 'am start -a android.intent.action.VIEW -d "https://www.youtube.com/watch?v=6XGeJwsUP9c"' },
   { wait: 9_000 },
@@ -145,11 +156,20 @@ export const SCENES = [
       'not on you.',
     minMs: 14_000,
     actions: [
-      { swipe: [590, 1800, 590, 900, 700] },
-      { wait: 1_500 },
-      { tap: 'Bounced' },
-      { wait: 2_000 },
-      { tap: 'All' },
+      { swipe: [540, 1800, 540, 900, 700] },
+      { wait: 1_200 },
+      // The chip row scrolls horizontally and only reaches Beaten at this
+      // width - Bounced sits off the right edge, so it has to be scrolled into
+      // view before it can be tapped. The chips sit at y ~366.
+      { swipe: [900, 366, 240, 366, 500] },
+      { wait: 1_200 },
+      // maxY keeps this on the filter chip. "Bounced" is also printed under
+      // every bounced game, and tapping that opens the game instead.
+      { tap: 'Bounced', maxY: 620 },
+      { wait: 2_500 },
+      { swipe: [240, 366, 900, 366, 500] },
+      { wait: 1_000 },
+      { tap: 'All', maxY: 620 },
     ],
   },
   {
@@ -184,10 +204,15 @@ export const SCENES = [
     // and the paywall's own design are what this scene sells; a store sheet is
     // the least interesting thing that could be on screen here.
     actions: [
+      // Let scene 5's back-navigation finish. Under the load of screenrecord
+      // the pile can be dumped while the detail screen is still animating out,
+      // and a tap issued then is swallowed by the transition - the tap reports
+      // success, the sheet never opens, and nothing in the log says so.
+      { wait: 2_500 },
       // The Pro badge in the pile header. Until this existed the paywall could
       // only be reached by owning thirty games and trying to add a thirty-first,
       // which meant no reviewer or judge could ever see it.
-      { tap: 'Pro' },
+      { tap: 'Pro', maxY: 620 },
       { wait: 6_000 },
     ],
   },

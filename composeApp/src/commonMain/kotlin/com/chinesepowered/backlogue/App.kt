@@ -93,6 +93,7 @@ fun App(
                         }
                     },
                     onShowPaywall = { showPaywall = true },
+                    autoFocus = initialCandidate == null,
                 )
             }
 

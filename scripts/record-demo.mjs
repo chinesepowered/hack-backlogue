@@ -145,7 +145,14 @@ async function bootEmulator() {
   if (!avdExists()) createAvd();
 
   console.log(`Booting ${AVD_NAME} …`);
-  const proc = spawn(EMULATOR, ['-avd', AVD_NAME, '-no-boot-anim', '-no-snapshot-save'], {
+  // -dns-server is not optional here. The emulator inherits the host resolver by
+  // default and on this machine that silently stops resolving, which the app
+  // reports as "No connection" while ping to a bare IP still succeeds - so the
+  // network looks fine and every search returns nothing.
+  const proc = spawn(EMULATOR, [
+    '-avd', AVD_NAME, '-no-boot-anim', '-no-snapshot-save',
+    '-dns-server', '8.8.8.8,8.8.4.4',
+  ], {
     detached: true,
     stdio: 'ignore',
   });
@@ -215,6 +222,38 @@ function visibleLabels(xml) {
   const out = new Set();
   for (const m of xml.matchAll(/(?:text|content-desc)="([^"]+)"/g)) out.add(m[1]);
   return [...out];
+}
+
+/**
+ * Centre of a labelled node, optionally restricted to a band of the screen.
+ *
+ * Status names are ambiguous: "Bounced" is a filter chip at the top AND the
+ * status label printed under every matching row. Taking the first match tapped
+ * the row and opened a detail screen, stranding the take there. maxY keeps chip
+ * taps in the header.
+ */
+function centreOfIn(xml, label, { maxY = Infinity, minY = 0 } = {}) {
+  // Whole nodes, then both attributes checked inside each one. An alternation
+  // like (?:text|content-desc)="([^"]*)" captures whichever comes FIRST and the
+  // global match then skips past the other - so a node carrying text="" and
+  // content-desc="Remove from pile" only ever reported the empty text, and the
+  // button read as missing while sitting in plain view in the dump.
+  for (const node of xml.match(/<node\b[^>]*>/g) ?? []) {
+    const bounds = node.match(/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);
+    if (!bounds) continue;
+
+    const labels = [
+      node.match(/\stext="([^"]*)"/)?.[1],
+      node.match(/\scontent-desc="([^"]*)"/)?.[1],
+    ];
+    if (!labels.includes(label)) continue;
+
+    const cy = Math.round((Number(bounds[2]) + Number(bounds[4])) / 2);
+    if (cy >= minY && cy <= maxY) {
+      return [Math.round((Number(bounds[1]) + Number(bounds[3])) / 2), cy];
+    }
+  }
+  return null;
 }
 
 function centreOf(xml, label) {
@@ -296,10 +335,10 @@ function dismissDialog() {
   return null;
 }
 
-async function tapText(label, { attempts = 6 } = {}) {
+async function tapText(label, { attempts = 6, maxY = Infinity, minY = 0 } = {}) {
   for (let i = 0; i < attempts; i += 1) {
     const xml = uiDump();
-    const pt = centreOf(xml, label);
+    const pt = centreOfIn(xml, label, { maxY, minY });
     if (pt) {
       adbShell(`input tap ${pt[0]} ${pt[1]}`);
       return true;
@@ -372,7 +411,7 @@ async function runAction(action, deadline = Infinity) {
     return;
   }
   if (action.tap) {
-    const ok = await tapText(action.tap);
+    const ok = await tapText(action.tap, { maxY: action.maxY ?? Infinity, minY: action.minY ?? 0 });
     if (!ok) console.error('  (continuing — the take will need a retry)');
     return;
   }
@@ -426,24 +465,34 @@ async function main() {
     for (const action of SETUP) await runAction(action);
   }
 
-  const limit = Math.ceil(totalMs / 1000) + 3;
-  console.log(`Recording (screenrecord --time-limit ${limit}) …\n`);
-
-  // --time-limit rather than killing the process: stopping screenrecord cleanly
-  // from the host is unreliable on Windows, and a truncated mp4 has no moov box
-  // and will not play at all.
-  const rec = spawn(ADB, [
-    'shell', 'screenrecord', '--bit-rate', '12M', '--time-limit', String(limit), '/sdcard/take.mp4',
-  ], { stdio: 'ignore' });
-
-  await sleep(1_500); // let the encoder start before the first action
+  // One clip per scene, not one long take.
+  //
+  // screenrecord on this emulator stops at about 87 seconds no matter what
+  // --time-limit says, and it reports success when it does - so a 114s take
+  // silently came back missing its last three scenes while every scene in the
+  // log read as fine. Per-scene clips stay far under that ceiling, and they
+  // remove the alignment problem entirely: each clip IS its scene, so the
+  // narration cannot drift out of sync with the footage no matter how the
+  // device behaves. Each clip is also short enough to re-shoot on its own.
+  console.log('Recording one clip per scene …\n');
 
   const markers = [];
   const started = Date.now();
   for (const [i, scene] of SCENES.entries()) {
     const at = Date.now() - started;
-    markers.push({ id: scene.id, title: scene.title, atMs: at, holdMs: holds[i] });
     console.log(`  ${String(at / 1000).padStart(6)}s  ${scene.id}  ${scene.title}`);
+
+    const holdSec = Math.ceil(holds[i] / 1000) + 2;
+    const remote = `/sdcard/scene-${scene.id}.mp4`;
+    adbShell(`rm -f ${remote}`);
+    const rec = spawn(ADB, [
+      'shell', 'screenrecord',
+      '--size', '720x1600',
+      '--bit-rate', '8M',
+      '--time-limit', String(holdSec),
+      remote,
+    ], { stdio: 'ignore' });
+    await sleep(900); // let the encoder come up before anything moves
 
     const sceneEnd = Date.now() + holds[i];
     for (const action of scene.actions) {
@@ -455,16 +504,42 @@ async function main() {
     }
     const left = sceneEnd - Date.now();
     if (left > 0) await sleep(left);
+
+    await new Promise((r) => rec.on('exit', r));
+    await sleep(1_500); // let the file finalise on device
+
+    const local = join(WORK, `scene-${scene.id}.mp4`);
+    adb('pull', remote, local);
+
+    // Starting and stopping screenrecord back to back sometimes leaves the
+    // virtual display busy, and the next scene gets a ~60KB stub with no
+    // playable stream. It exits successfully either way, so the only way to
+    // notice is to look at what came back.
+    const size = Number(adbShell(`stat -c %s ${remote} 2>/dev/null || echo 0`).trim()) || 0;
+    if (size < 200_000) {
+      console.log(`        clip came back as a ${size}B stub - re-shooting this scene`);
+      adbShell(`rm -f ${remote}`);
+      await sleep(3_000);
+      const retry = spawn(ADB, [
+        'shell', 'screenrecord', '--size', '720x1600', '--bit-rate', '8M',
+        '--time-limit', String(holdSec), remote,
+      ], { stdio: 'ignore' });
+      await sleep(Math.min(holds[i], 12_000));
+      await new Promise((r) => retry.on('exit', r));
+      await sleep(1_500);
+      adb('pull', remote, local);
+    }
+
+    markers.push({ id: scene.id, title: scene.title, holdMs: holds[i], file: `scene-${scene.id}.mp4` });
+    await sleep(1_200); // let the encoder release before the next scene
   }
 
-  await new Promise((r) => rec.on('exit', r));
-  await sleep(1_500); // let the file finalise on device
+  writeFileSync(
+    join(WORK, 'markers.json'),
+    `${JSON.stringify({ startedAt: started, perScene: true, markers }, null, 2)}\n`,
+  );
 
-  const take = join(WORK, 'take.mp4');
-  adb('pull', '/sdcard/take.mp4', take);
-  writeFileSync(join(WORK, 'markers.json'), `${JSON.stringify({ startedAt: started, markers }, null, 2)}\n`);
-
-  console.log(`\nTake:    ${take}`);
+  console.log(`\nClips:   ${markers.length} in ${WORK}`);
   console.log(`Markers: ${join(WORK, 'markers.json')}`);
 
   if (!has('--keep')) {
