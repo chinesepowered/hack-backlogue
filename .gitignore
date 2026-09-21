@@ -24,3 +24,8 @@ keystore.properties
 
 # emulator verification output
 .emu-out/
+
+# demo video work product — large binaries, regenerable from scripts/demo-scenes.mjs
+docs/video/_work/
+docs/video/*.mp4
+docs/video/music.mp3
