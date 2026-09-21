@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "devpost": {
+      "type": "http",
+      "url": "https://devpost.com/mcp"
+    }
+  }
+}
