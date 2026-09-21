@@ -16,10 +16,8 @@ Two hard rules from the official rules worth re-reading before you start:
 
 Ten days left. Two things are on the critical path and nothing else is:
 
-1. **The demo video is recorded** — `docs/video/backlogue-demo.mp4`, 114.5s,
-   inside the two-minute cap. It still has to be **uploaded to YouTube** and the
-   URL pasted into the Devpost draft; the submission cannot be completed without
-   that link. See section 8.
+1. ~~Demo video~~ — **done**. Recorded, uploaded public, and set on the Devpost
+   project: https://www.youtube.com/watch?v=3Wbm6W8L_PI
 2. **The app is on internal testing, not production.** Play review is 3–7 days
    from a standing start, and the Shipaton requires the app *fully published*.
    Promoting is gated on the App content declarations, which are now all
@@ -275,7 +273,6 @@ Option 1 is the only one that produces the opening shot the pitch depends on.
 
 ## Known gaps — read this before submitting
 
-- **No demo video.** Section 8. This is the critical path.
 - **Not on production.** Internal testing only; Play review is 3–7 days.
 - **Purchases have never executed.** The code compiles and the flow is wired,
   but a real purchase needs a real Play Console product and real hardware — an

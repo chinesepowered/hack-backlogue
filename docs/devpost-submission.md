@@ -14,10 +14,18 @@ submission form to its answer, so finishing it is mechanical.
 | Submissions close | **2026-10-01 06:45 UTC** = Sep 30, 11:45pm PDT |
 | Winners announced | 2026-10-21 |
 
-Already filled by MCP: name, tagline, description, Built With, repo link.
+Already filled by MCP: name, tagline, description, Built With, links, and the
+**demo video**.
 
-Still needed to submit at all: **a demo video URL**. `video_required` is true on
-this hackathon, so there is no submitting around it.
+| | |
+| --- | --- |
+| Video | https://www.youtube.com/watch?v=3Wbm6W8L_PI (public) |
+| Site | https://backlogue-app.vercel.app/ |
+
+YouTube classified the upload as a **Short** — it is vertical and under three
+minutes, which is the rule. `youtube.com/shorts/3Wbm6W8L_PI` and
+`youtube.com/watch?v=3Wbm6W8L_PI` are the same video; the watch form is the one
+given to Devpost because it is what oembed returns an embeddable player for.
 
 ---
 
@@ -121,9 +129,7 @@ rather than unfinished.
 
 ## What is left, in order
 
-1. **Upload the demo video** to YouTube — `docs/video/backlogue-demo.mp4` is
-   recorded and 114.5s. `video_required` is true, so the link blocks submission
-   outright, Next Gen included.
+1. ~~Upload the demo video~~ — **done**, public, and set on the project.
 2. ~~Deploy `web/`~~ — **done**, https://backlogue-app.vercel.app/
 3. **Promote to production** — 3–7 day review, so this is the long pole.
 4. **Promo code** — needs the subscription live.
