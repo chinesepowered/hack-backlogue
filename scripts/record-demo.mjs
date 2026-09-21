@@ -35,7 +35,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync, spawn } from 'node:child_process';
-import { SCENES, TAIL_MS, APP_ID } from './demo-scenes.mjs';
+import { SCENES, SETUP, TAIL_MS, APP_ID } from './demo-scenes.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const WORK = resolve(ROOT, 'docs', 'video', '_work');
@@ -228,6 +228,74 @@ function centreOf(xml, label) {
   return [Math.round((x1 + x2) / 2), Math.round((y1 + y2) / 2)];
 }
 
+/** Every text node with its bounds. */
+function nodes(xml) {
+  return [...xml.matchAll(/<node[^>]*text="([^"]*)"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/g)]
+    .map((m) => ({
+      text: m[1],
+      cx: Math.round((+m[2] + +m[4]) / 2),
+      cy: Math.round((+m[3] + +m[5]) / 2),
+    }));
+}
+
+/**
+ * The Add button belonging to one specific search result.
+ *
+ * Every row in the results list has its own "Add", so tapping the first node
+ * whose text is "Add" adds the FIRST result regardless of which title was
+ * tapped - which on camera means the wrong game lands in the pile. The capture
+ * screen also shows the cleaned query as a header whose text usually equals the
+ * game title, so the first node matching the title is often that header, which
+ * owns no button. Try every candidate and take the one with a button beside it.
+ */
+function addButtonFor(xml, title) {
+  const all = nodes(xml);
+  const adds = all.filter((n) => n.text === 'Add');
+  if (adds.length === 0) return null;
+
+  for (const target of all.filter((n) => n.text === title)) {
+    const nearest = adds
+      .slice()
+      .sort((a, b) => Math.abs(a.cy - target.cy) - Math.abs(b.cy - target.cy))[0];
+    if (Math.abs(nearest.cy - target.cy) <= 220) return [nearest.cx, nearest.cy];
+  }
+  return null;
+}
+
+async function addExact(title, attempts = 8) {
+  for (let i = 0; i < attempts; i += 1) {
+    const pt = addButtonFor(uiDump(), title);
+    if (pt) {
+      adbShell(`input tap ${pt[0]} ${pt[1]}`);
+      return true;
+    }
+    await sleep(800);
+  }
+  console.error(`
+  Could not find an Add button for "${title}".`);
+  return false;
+}
+
+/**
+ * Clears whatever system dialog is in the way.
+ *
+ * Permission prompts and chooser confirmations belong to other processes and
+ * sit on top of the app, swallowing taps meant for it. Opening a browser raises
+ * YouTube's notification prompt, which is how the first take lost its share
+ * sheet entirely.
+ */
+function dismissDialog() {
+  const xml = uiDump();
+  for (const label of ['Allow', 'Just once', 'OK', 'Continue', 'Not now', 'No thanks']) {
+    const pt = centreOf(xml, label);
+    if (pt) {
+      adbShell(`input tap ${pt[0]} ${pt[1]}`);
+      return label;
+    }
+  }
+  return null;
+}
+
 async function tapText(label, { attempts = 6 } = {}) {
   for (let i = 0; i < attempts; i += 1) {
     const xml = uiDump();
@@ -245,11 +313,64 @@ async function tapText(label, { attempts = 6 } = {}) {
   return false;
 }
 
-async function runAction(action) {
-  if (action.wait) return sleep(action.wait);
+async function runAction(action, deadline = Infinity) {
+  // Every retry loop below is capped by the scene's own deadline. Without that,
+  // a tap that cannot find its target burns thirty seconds of a fifteen-second
+  // scene and every later scene drifts out of sync with its narration - which
+  // is exactly how the first take ended up 171s into a 113s recording.
+  const budget = () => Math.max(0, deadline - Date.now());
+
+  if (action.wait) return sleep(Math.min(action.wait, budget()));
   if (action.shell) return void adbShell(action.shell);
+  if (action.dismiss) return void dismissDialog();
   if (action.tapXY) return void adbShell(`input tap ${action.tapXY[0]} ${action.tapXY[1]}`);
   if (action.swipe) return void adbShell(`input swipe ${action.swipe.join(' ')}`);
+  if (action.removeIfPresent) {
+    // The take adds this game on camera, so a previous take's copy has to go
+    // first - otherwise the capture screen offers "Already in your pile" and
+    // there is no Add button for scene 2 to press.
+    adbShell(`am force-stop ${APP_ID}`);
+    await sleep(1_500);
+    adbShell(`am start -n ${APP_ID}/.MainActivity`);
+    await sleep(3_500);
+    if (centreOf(uiDump(), action.removeIfPresent)) {
+      console.log(`  removing ${action.removeIfPresent} left by an earlier take`);
+      if (await tapText(action.removeIfPresent, { attempts: 4 })) {
+        await sleep(2_500);
+        await tapText('Remove from pile', { attempts: 4 });
+        await sleep(2_000);
+      }
+    }
+    adbShell(`am force-stop ${APP_ID}`);
+    await sleep(1_000);
+    return;
+  }
+  if (action.tapAny) {
+    for (let i = 0; i < 6 && budget() > 0; i += 1) {
+      const xml = uiDump();
+      for (const label of action.tapAny) {
+        const pt = centreOf(xml, label);
+        if (pt) {
+          adbShell(`input tap ${pt[0]} ${pt[1]}`);
+          return;
+        }
+      }
+      if (dismissDialog()) {
+        await sleep(900);
+        continue;
+      }
+      await sleep(700);
+    }
+    if (!action.optional) {
+      console.error(`  could not tap any of: ${action.tapAny.join(' / ')}`);
+    }
+    return;
+  }
+  if (action.add) {
+    const ok = await addExact(action.add);
+    if (!ok) console.error('  (continuing — the take will need a retry)');
+    return;
+  }
   if (action.tap) {
     const ok = await tapText(action.tap);
     if (!ok) console.error('  (continuing — the take will need a retry)');
@@ -300,6 +421,11 @@ async function main() {
     console.log('  WARNING: over two minutes. Judges are not required to watch past it.');
   }
 
+  if (SETUP.length) {
+    console.log('Setup (before recording starts) …');
+    for (const action of SETUP) await runAction(action);
+  }
+
   const limit = Math.ceil(totalMs / 1000) + 3;
   console.log(`Recording (screenrecord --time-limit ${limit}) …\n`);
 
@@ -320,7 +446,13 @@ async function main() {
     console.log(`  ${String(at / 1000).padStart(6)}s  ${scene.id}  ${scene.title}`);
 
     const sceneEnd = Date.now() + holds[i];
-    for (const action of scene.actions) await runAction(action);
+    for (const action of scene.actions) {
+      if (Date.now() >= sceneEnd) {
+        console.log('        (scene budget spent - remaining actions skipped)');
+        break;
+      }
+      await runAction(action, sceneEnd);
+    }
     const left = sceneEnd - Date.now();
     if (left > 0) await sleep(left);
   }

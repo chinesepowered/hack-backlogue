@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -76,6 +77,11 @@ fun DetailContent(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background)
+            // Edge-to-edge is mandatory at targetSdk 36, so without this the
+            // top row renders behind the status bar: the clock sits on the back
+            // arrow, the battery icon on the delete button, and the system bar
+            // eats any tap aimed at either.
+            .statusBarsPadding()
             .verticalScroll(rememberScrollState()),
     ) {
         Row(

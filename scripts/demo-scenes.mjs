@@ -27,7 +27,7 @@ export const CAPTURE = `${APP_ID}/.capture.CaptureActivity`;
  * demonstrates nothing.
  */
 export const SHARE_TEXT =
-  'Silksong is FINALLY here! | First Impressions https://www.youtube.com/watch?v=pFBtc9NvSjc';
+  'Hollow Knight: Silksong - Official Launch Trailer https://www.youtube.com/watch?v=pFBtc9NvSjc';
 
 /** The result to pick out of the search hits. Exact text, so the two other
  *  Silksong entries IGDB returns ("Hollow Knight Silksong", "... Sea of
@@ -43,12 +43,34 @@ export const SHARE_PICK = 'Hollow Knight: Silksong';
  *
  * `actions` run against the emulator via adb. Each is one of:
  *   {tap: 'Text'}      find that text with uiautomator and tap its centre
+ *   {tapAny: [...]}    tap the first of these labels that is on screen
+ *   {dismiss: true}    clear any system permission / chooser dialog
+ *   {add: 'Title'}     tap the Add button belonging to that search result
  *   {tapXY: [x, y]}    absolute tap, for things with no accessible text
  *   {swipe: [x1,y1,x2,y2,ms]}
  *   {shell: '...'}     raw adb shell command
  *   {wait: ms}
  *   {manual: '...'}    pause and ask the operator to do it by hand
  */
+/**
+ * Run before the recording starts, never inside it.
+ *
+ * Opening a browser takes several seconds and can raise YouTube's own
+ * notification prompt - both of which used to happen inside scene 1's budget,
+ * pushing every later scene out of sync with its narration.
+ */
+export const SETUP = [
+  { removeIfPresent: SHARE_PICK },
+  { removeIfPresent: 'Hollow Knight Silksong' },
+  { shell: 'am force-stop com.android.chrome' },
+  { shell: 'am start -a android.intent.action.VIEW -d "https://www.youtube.com/watch?v=6XGeJwsUP9c"' },
+  { wait: 9_000 },
+  { dismiss: true },
+  { wait: 2_000 },
+  { dismiss: true },
+  { wait: 1_000 },
+];
+
 export const SCENES = [
   {
     id: '01-gesture',
@@ -60,9 +82,7 @@ export const SCENES = [
       'Backlogue is just a share target.',
     minMs: 13_000,
     actions: [
-      // Chrome on a YouTube watch page, so the share has somewhere to come from.
-      { shell: 'am start -a android.intent.action.VIEW -d "https://www.youtube.com/watch?v=6XGeJwsUP9c"' },
-      { wait: 6_000 },
+      { wait: 3_000 },
       // The real system chooser, not our activity directly. This is the shot the
       // whole submission rests on, so it has to be Android's own sheet.
       {
@@ -70,8 +90,11 @@ export const SCENES = [
           'am start -a android.intent.action.SEND -t text/plain ' +
           `--es android.intent.extra.TEXT ${JSON.stringify(SHARE_TEXT)}`,
       },
-      { wait: 2_500 },
-      { tap: 'Backlogue' },
+      { wait: 3_000 },
+      // The sheet reads "Share with Backlogue" and confirms with Just once /
+      // Always. Never Always: a default would stop the sheet appearing at all,
+      // and the sheet is the shot.
+      { tapAny: ['Just once', 'Share with Backlogue'] },
     ],
   },
   {
@@ -80,26 +103,27 @@ export const SCENES = [
     narration:
       "One tap, and it's saved, without leaving what you were watching. " +
       'And it remembers where you found it. From a YouTube video.',
-    minMs: 10_000,
+    minMs: 15_000,
     actions: [
-      { tap: SHARE_PICK },
-      { wait: 1_200 },
-      { tap: 'Add' },
-      { wait: 2_500 },
+      { shell: 'am force-stop com.android.chrome' },
+      // {add:} not {tap:} - every result row has its own Add button, so tapping
+      // the first one adds whatever IGDB happened to rank first.
+      { add: SHARE_PICK },
+      { wait: 3_000 },
       // CaptureActivity has no finish() after an add - it stays open showing
       // "Already in your pile" so you can add a second game from one share.
       // A real user backs out here, so the take does too.
       { shell: 'input keyevent KEYCODE_BACK' },
-      { wait: 1_200 },
+      { wait: 1_000 },
       { shell: `am start -n ${MAIN}` },
-      { wait: 2_000 },
+      { wait: 3_000 },
     ],
   },
   {
     id: '03-parser',
     title: 'The parser',
     narration:
-      'That share was titled "Silksong is FINALLY here, first impressions". ' +
+      'That share was titled "Hollow Knight Silksong, official launch trailer". ' +
       'The hard part of this app is a text parser that strips the hype and the ' +
       'channel name and keeps the title. When it is not sure, it says so and ' +
       'opens a search box instead of guessing.',
@@ -136,9 +160,15 @@ export const SCENES = [
       'and pushes through OneSignal. But only when something actually changed. ' +
       'A date appeared. A date moved. Or it is out.',
     minMs: 13_000,
+    // A wishlisted game with no date is the thing the sweep is watching for, so
+    // the detail screen is the honest illustration. Firing a real push mid-take
+    // would need the OneSignal REST key on this machine, and a notification
+    // shade sliding over the app is a worse shot than the game it is about.
     actions: [
-      { manual: 'Open a wishlisted game with no release date, then trigger the test push' },
-      { wait: 4_000 },
+      { tap: 'Blue Prince' },
+      { wait: 5_000 },
+      { shell: 'input keyevent KEYCODE_BACK' },
+      { wait: 1_500 },
     ],
   },
   {

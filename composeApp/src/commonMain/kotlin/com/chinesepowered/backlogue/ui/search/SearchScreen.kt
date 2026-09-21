@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -76,7 +77,10 @@ fun SearchScreen(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize().background(colors.background)) {
+    // Same edge-to-edge inset as DetailScreen - this is the capture screen,
+    // the one a share lands on, so its top row being under the clock is the
+    // first thing anyone sees.
+    Column(modifier = modifier.fillMaxSize().background(colors.background).statusBarsPadding()) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 4.dp, end = 16.dp, top = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
