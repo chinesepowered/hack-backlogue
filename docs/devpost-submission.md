@@ -8,7 +8,7 @@ submission form to its answer, so finishing it is mechanical.
 | Project | https://devpost.com/software/backlogue |
 | Project id | `1437666` |
 | Submission id | `1191707` |
-| Status | **Draft** — not submitted |
+| Status | **Submitted** 2026-09-21 18:27 EDT — editable until the deadline |
 | Devpost account | Nelson Lai · `clai74@mail.ccsf.edu` (id 8820504) |
 | Hackathon | `revenuecat-shipaton-2026` |
 | Submissions close | **2026-10-01 06:45 UTC** = Sep 30, 11:45pm PDT |
@@ -127,15 +127,28 @@ rather than unfinished.
 
 ---
 
-## What is left, in order
+## Submitted — and what still has to change
 
-1. ~~Upload the demo video~~ — **done**, public, and set on the project.
-2. ~~Deploy `web/`~~ — **done**, https://backlogue-app.vercel.app/
-3. **Promote to production** — 3–7 day review, so this is the long pole.
-4. **Promo code** — needs the subscription live.
-5. **Build-in-public thread URL** — needs a post.
-6. **Upload icon + screenshot** on the web form (no MCP support).
-7. Then submit. Everything else is already written.
+The entry is in. Devpost allows re-submitting to update it until the deadline,
+so the remaining items are edits, not blockers.
 
-Steps 2 and 3 are only needed for six of the seven categories. Step 1 is needed
-for all of them, Next Gen included.
+**1. Make `hack-backlogue` public.** ⚠️ It is private right now, and Next Gen is
+judged on the source. The repo URL is already in the entry (field 27793) and in
+the project links, so today it 404s for a judge. History was scanned before
+submitting: 389 blobs, no `sk_`/`os_v2_app_`/`AIza`/`ghp_` keys, no private key
+blocks, and no keystore, `local.properties`, `.env` or service-account file was
+ever tracked. The only committed credentials are the RevenueCat `goog_` public
+SDK key and the OneSignal App ID, both of which are client-side by design.
+
+**Leave `hack-ship` private.** It still holds the pre-rewrite history.
+
+**2. Play Store URL** (field 27384) and **first-release confirmation**
+(field 27380). Both were left blank because the app is on internal testing, not
+production — ticking 27380 today would be a false statement. Fill both in after
+the rollout, then re-submit.
+
+**3. Promo code** (field 28135) — needs the subscription live.
+
+**4. Build-in-public links** (field 28119) — needs a public post to link.
+
+Only item 1 affects Next Gen. Items 2-4 affect the other six categories.
