@@ -160,51 +160,44 @@ history, advertising identifiers. There is no analytics SDK and no ad SDK.
 
 ### Play Data Safety answers
 
-Filled by `scripts/fill-data-safety.mjs` — Play accepts this form only as a CSV
-round-trip through the console, so export the CSV first and import the filled
-one back. If you change an answer here, change it there.
+**Already written: `data-safety.csv` in this folder.** Play accepts this form
+only as a CSV round-trip through the console, so import that file at App content
+→ Data safety → Import from CSV. Regenerate with
+`node scripts/fill-data-safety.mjs` only if Play rejects the schema.
 
-- Data collected: **Device or other IDs** → purpose *App functionality*, not
-  shared, not required
-- Data collected: **App activity → Other actions** (saved game ids) → purpose
-  *App functionality*, not shared, not required
-- Data collected: **Financial info → Purchase history** → purpose *App
-  functionality*, not shared. The app itself never sends this, but RevenueCat
-  handles purchase tokens as our service provider, and Play counts a service
-  provider as collection.
-- Encrypted in transit: **Yes**
-- Users can request deletion: **Yes** — the contact address above, and
-  uninstalling stops registration outright (the server drops a device when it
-  re-registers with an empty list)
+Three types, all **collected, not shared**, all for *App functionality*, all
+**optional** (the user can avoid every one):
+
+- **Device or other IDs** — the OneSignal push subscription id
+- **App activity → Other actions** — the IGDB ids of unfinished games in the pile
+- **Financial info → Purchase history** — RevenueCat's purchase tokens and
+  entitlement state
+
+Not declared: search terms (processed transiently, never stored), diagnostics
+and crash logs (no such SDK in the build), advertising ID (no `AD_ID`
+permission in the merged manifest).
+
+Also: encrypted in transit **yes**, account creation **none**, deletion requests
+**yes** pointing at the privacy policy URL.
+
+The reasoning behind each answer, plus every other App content section, is in
+[store-submission.md](store-submission.md).
 
 ### Privacy policy
 
-Both stores require a **public URL**, not a file. Fastest free option: put the
-text below in a public GitHub Gist, or a page in this repo published with GitHub
-Pages, and link that.
+Both stores require a **public URL**, not a file. The full policy already exists
+at [`web/privacy.html`](../../web/privacy.html) — deploy `web/` to
+`backlogue.chinesepowered.com` and the URL is:
 
 ```
-Backlogue Privacy Policy
-
-Backlogue stores your game list on your device.
-
-To send you release alerts, Backlogue sends two things to its own server: an
-anonymous notification id provided by OneSignal, and the IGDB catalogue ids of
-the games in your list. These are not linked to your name, email, or any
-account, and they are never sold or shared.
-
-Backlogue uses RevenueCat to process purchases. RevenueCat receives an anonymous
-user id and your purchase status. See revenuecat.com/privacy.
-
-Game information comes from IGDB (igdb.com).
-
-Backlogue contains no advertising and no analytics.
-
-Uninstalling the app stops all data collection. To have server-side data
-removed, contact nelson@chinesepowered.com.
-
-Last updated: [DATE]
+https://backlogue.chinesepowered.com/privacy.html
 ```
+
+It must be live before submitting. Play fetches it during review, and the same
+URL is the deletion-request URL in the Data safety form, so a 404 fails twice.
+
+The contact address in the policy (`nelson@chinesepowered.com`) has to match the
+developer contact email set by `scripts/play-setup.mjs`.
 
 ---
 

@@ -10,7 +10,8 @@ RevenueCat APIs. No iOS equivalents — Backlogue does not ship on iOS, see
 > 1024, RevenueCat identifies a Play subscription as `subscriptionId:basePlanId`
 > and not by the subscription id alone, and `is_current` is read-only when
 > creating an offering. `fill-data-safety.mjs` has been exercised against a
-> synthetic export but not against a real one.
+> real Play export schema, and its output is checked in at
+> `docs/store/data-safety.csv`, ready to import.
 
 ## Order
 
@@ -121,7 +122,9 @@ project is current already, so the script checks it rather than setting it.
 
 ## Not automated
 
-- **App content declarations** — privacy policy URL, ads (none), target
+- **App content declarations** — every section is answered, with reasoning, in
+  [../docs/store/store-submission.md](../docs/store/store-submission.md):
+  privacy policy URL, ads (none), advertising ID (none), target
   audience, content rating questionnaire.
 - **Rollout** — promoting a build from Internal testing to Production is
   deliberately left manual.
