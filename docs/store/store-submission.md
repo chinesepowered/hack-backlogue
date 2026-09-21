@@ -14,7 +14,7 @@ and RevenueCat are all scripted; what's left is declarations and rollout.
 | Package | `com.chinesepowered.backlogue` |
 | Play listing title | **Backlogue** |
 | Category | Entertainment |
-| Site / privacy URL | `https://backlogue.chinesepowered.com/` · `/privacy.html` |
+| Site / privacy URL | `https://backlogue-app.vercel.app/` · `/privacy.html` |
 | Public contact | `nelson@chinesepowered.com` |
 | Subscription | `backlogue_pro_monthly`, base plan `monthly`, $1.99/mo |
 | RevenueCat | entitlement `pro`, offering `default`, project `projb3ae91a4` |
@@ -26,12 +26,18 @@ never unlocks, and nothing in the build will warn you.
 
 ---
 
-## Step 0 — deploy the site first
+## Step 0 — the site — DONE
 
-`web/` is a static landing page plus the privacy policy. **Put it on
-`backlogue.chinesepowered.com` before submitting.** Play fetches the privacy URL
-during review, and a 404 is an instant hold. The same URL is also the deletion
-URL in the Data safety form, so it has to resolve.
+`web/` is live at **https://backlogue-app.vercel.app/**, with the privacy policy
+at `/privacy.html`. Both return 200.
+
+That unblocks two things at once: Play fetches the privacy URL during review,
+and the same URL is the deletion URL in the Data safety form, so a 404 would
+have failed twice.
+
+If the site ever moves, the URL is in four places — `scripts/fill-data-safety.mjs`
+(then re-run it to rewrite the CSV), `docs/store/listing.md`, this file, and
+`web/` itself.
 
 There is no `app-ads.txt` and there shouldn't be — the app ships no ad SDK, and
 an unbacked `app-ads.txt` is its own small mess.
@@ -72,7 +78,7 @@ shows for this app.
 ### Privacy policy
 
 ```
-https://backlogue.chinesepowered.com/privacy.html
+https://backlogue-app.vercel.app/privacy.html
 ```
 
 Must be live first (Step 0). The same URL goes in the Data safety deletion field

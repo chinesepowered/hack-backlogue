@@ -185,12 +185,11 @@ The reasoning behind each answer, plus every other App content section, is in
 
 ### Privacy policy
 
-Both stores require a **public URL**, not a file. The full policy already exists
-at [`web/privacy.html`](../../web/privacy.html) — deploy `web/` to
-`backlogue.chinesepowered.com` and the URL is:
+Both stores require a **public URL**, not a file. `web/` is **deployed**, so
+this resolves now:
 
 ```
-https://backlogue.chinesepowered.com/privacy.html
+https://backlogue-app.vercel.app/privacy.html
 ```
 
 It must be live before submitting. Play fetches it during review, and the same

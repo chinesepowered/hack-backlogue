@@ -69,7 +69,7 @@ if (!existsSync(src)) {
 // Where users can ask for server-side deletion. Play requires a URL here, not
 // an address, so it points at the privacy policy — which carries the contact.
 // This page must be live before review; a 404 here is an instant rejection.
-const DELETION_URL = 'https://backlogue.chinesepowered.com/privacy.html';
+const DELETION_URL = 'https://backlogue-app.vercel.app/privacy.html';
 
 const APP_FUNCTIONALITY = ['PSL_APP_FUNCTIONALITY'];
 

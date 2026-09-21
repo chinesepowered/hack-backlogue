@@ -121,8 +121,10 @@ rather than unfinished.
 
 ## What is left, in order
 
-1. **Demo video** — blocks submission outright. See `SUBMISSION.md` section 8.
-2. **Deploy `web/`** — blocks the Play submission, which blocks the store URL.
+1. **Upload the demo video** to YouTube — `docs/video/backlogue-demo.mp4` is
+   recorded and 114.5s. `video_required` is true, so the link blocks submission
+   outright, Next Gen included.
+2. ~~Deploy `web/`~~ — **done**, https://backlogue-app.vercel.app/
 3. **Promote to production** — 3–7 day review, so this is the long pole.
 4. **Promo code** — needs the subscription live.
 5. **Build-in-public thread URL** — needs a post.

@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://backlogue.chinesepowered.com/sitemap.xml
+Sitemap: https://backlogue-app.vercel.app/sitemap.xml

@@ -16,10 +16,10 @@ Two hard rules from the official rules worth re-reading before you start:
 
 Ten days left. Two things are on the critical path and nothing else is:
 
-1. **The demo video does not exist.** Nothing has been recorded. It is a
-   required Devpost attachment, and it needs the app running somewhere you can
-   film. See section 8 — this is the item most likely to run out of time,
-   because it depends on hardware rather than on writing.
+1. **The demo video is recorded** — `docs/video/backlogue-demo.mp4`, 114.5s,
+   inside the two-minute cap. It still has to be **uploaded to YouTube** and the
+   URL pasted into the Devpost draft; the submission cannot be completed without
+   that link. See section 8.
 2. **The app is on internal testing, not production.** Play review is 3–7 days
    from a standing start, and the Shipaton requires the app *fully published*.
    Promoting is gated on the App content declarations, which are now all
@@ -188,9 +188,10 @@ four screenshots at 1179×2556 with no device frame in `docs/screenshots/`.
 
 Two things gate the rest:
 
-- **Deploy `web/` first.** The privacy policy URL must resolve before review,
-  and the same URL is the deletion-request URL in the Data safety form, so a
-  404 fails twice.
+- **The site is live** at https://backlogue-app.vercel.app/ — privacy policy at
+  `/privacy.html`. That was the gating item: Play fetches the privacy URL during
+  review, and the same URL is the deletion-request URL in the Data safety form,
+  so a 404 would have failed twice.
 - Play: a personal account predating Nov 2023 skips the 12-tester gate, but
   still budget 3–7 days for first review.
 
@@ -269,13 +270,13 @@ Option 1 is the only one that produces the opening shot the pitch depends on.
 - Play App content answers and the Data safety CSV
 - Devpost public description and private judge answers
 - `slides.html` pitch deck, `socials.md` build-in-public posts
-- `web/` landing page and privacy policy — written, **not yet deployed**
+- `web/` landing page and privacy policy — **deployed** to
+  https://backlogue-app.vercel.app/
 
 ## Known gaps — read this before submitting
 
 - **No demo video.** Section 8. This is the critical path.
 - **Not on production.** Internal testing only; Play review is 3–7 days.
-- **`web/` is not deployed.** Blocks the store submission, not just the listing.
 - **Purchases have never executed.** The code compiles and the flow is wired,
   but a real purchase needs a real Play Console product and real hardware — an
   emulator cannot test Play billing. A reviewer will press that button.
