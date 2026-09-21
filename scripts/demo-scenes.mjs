@@ -130,11 +130,15 @@ export const SCENES = [
       'during a capture, because interrupting those two seconds would break the ' +
       'only thing this app is for.',
     minMs: 16_000,
+    // Ends on the paywall and the Pro state behind it. The free-tier argument
+    // and the paywall's own design are what this scene sells; a store sheet is
+    // the least interesting thing that could be on screen here.
     actions: [
       { tap: 'Settings' },
       { wait: 1_500 },
       { tap: 'Backlogue Pro' },
-      { wait: 4_000 },
+      { wait: 5_000 },
+      { manual: 'Dismiss onto the unlocked Pro state, alerts enabled' },
     ],
   },
   {

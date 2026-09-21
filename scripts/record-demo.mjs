@@ -25,10 +25,10 @@
 // but mixing the two sources means matching status bar, scale and motion
 // blur across a cut, for footage nobody would grade differently.
 //
-// What is NOT real here: the Play purchase. This image is `google_apis`, not
-// `google_apis_playstore`, so there is no Play Store and billing cannot run.
-// The paywall is shown and the Pro state is reached through the debug path.
-// Say so in the judges' notes rather than implying a purchase was made.
+// Scene 6 shows the paywall and the Pro state, not a store transaction. That
+// is the stronger shot anyway - the free-tier argument and the paywall's own
+// design are the interesting part - and this image is `google_apis` rather
+// than `google_apis_playstore`, so Play billing could not run here regardless.
 // ---------------------------------------------------------------------------
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';

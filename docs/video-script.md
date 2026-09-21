@@ -47,34 +47,40 @@ The share is triggered with a bare `ACTION_SEND` intent and no component, so
 Android shows its **own chooser** with Backlogue in it. That is a genuine system
 share sheet, not a recreation.
 
-## What is not real, and must be said
+## Scene 6 shows the product, not a transaction
 
-The emulator image is `google_apis`, not `google_apis_playstore`. There is no
-Play Store, so **billing cannot run**. The paywall is shown and Pro is reached
-through the debug path.
+The paywall and the Pro state are the shot: the thirty-game free tier, the
+argument for where the paywall is *not*, and the paywall's own design. That is
+what the HAMM and Design categories are looking at, and it is the strongest
+thirty seconds monetization gets.
 
-Do not cut this so it implies a purchase completed. The judges' notes should say
-the purchase flow is RevenueCat-wired but was demonstrated without a live Play
-transaction. This project has already produced three features that compiled
-perfectly and did nothing; claiming a verified purchase we have not watched
-would be the fourth.
+A store sheet would be the least interesting thing that could be on screen, and
+this emulator image is `google_apis` rather than `google_apis_playstore`, so
+Play billing could not run here in any case.
+
+Verifying a real purchase on real hardware is a separate pre-submission step —
+see the checklist in `docs/devpost-additional.md`. Do it before submitting, and
+then every claim in the entry is one you have watched work.
 
 ## The running order
 
-| # | Scene | ~ | On screen |
-| --- | --- | --- | --- |
-| 1 | The gesture | 0:00 | Chrome on a YouTube watch page → system share sheet → Backlogue → the game lands |
-| 2 | It landed | 0:14 | The pile, new game at top, provenance line under it |
-| 3 | The parser | 0:25 | The messy shared title, and what it became |
-| 4 | Against its genre | 0:39 | Scroll the pile, filter chips, a Bounced game |
-| 5 | Alerts | 0:54 | A wishlisted game with no date, then a notification arrives |
-| 6 | Pro | 1:07 | Settings → paywall → unlocked |
-| 7 | One codebase | 1:24 | Desktop build, same screens |
-| 8 | Close | 1:35 | The pile, wordmark |
+| # | Scene | Starts | Narration | On screen |
+| --- | --- | --- | --- | --- |
+| 1 | The gesture | 0:00 | 15.0s | Chrome on a YouTube watch page → system share sheet → Backlogue → the game lands |
+| 2 | It landed | 0:15 | 8.3s | The pile, new game at top, provenance line under it |
+| 3 | The parser | 0:25 | 19.0s | The messy shared title, and what it became |
+| 4 | Against its genre | 0:45 | 16.7s | Scroll the pile, filter chips, a Bounced game |
+| 5 | Alerts | 1:02 | 13.9s | A wishlisted game with no date, then a notification arrives |
+| 6 | Pro | 1:16 | 16.1s | Settings → paywall → the unlocked Pro state |
+| 7 | One codebase | 1:33 | 9.4s | Desktop build, same screens |
+| 8 | Close | 1:44 | 3.0s | The pile, wordmark |
 
-Target is about **1:45**, leaving headroom under the cap. `compose-demo.mjs`
-warns if the result runs over, and `narrate.mjs` warns if the narration alone
-passes 1:55.
+Rendered narration totals **101.4s**, so the take runs about **111s** —
+comfortably under the two-minute cap, with roughly 9s of headroom.
+Scene 3 is the longest line at 19.0s; trim it first if anything needs to go.
+
+`compose-demo.mjs` warns if the finished file runs over, and `narrate.mjs` warns
+if the narration alone passes 1:55.
 
 Scene 7's desktop footage is captured separately (`./gradlew :composeApp:run`
 plus any screen recorder) and cut in by hand. It is the only shot the emulator

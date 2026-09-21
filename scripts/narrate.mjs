@@ -14,10 +14,10 @@
 //   1. ELEVENLABS_API_KEY
 //   2. ../_elevenlabs/backlogue.env   (KEY=value lines)
 //
-// Voice: ELEVENLABS_VOICE takes a name or a voice id. Unset, it walks
-// DEFAULT_VOICES in order and takes the first one the account actually has —
-// voice ids are not stable across accounts, and hardcoding one is how this
-// script would fail on someone else's machine with a 404 that says nothing.
+// Voice: ELEVENLABS_VOICE takes a name or a voice id. Unset, it takes the best
+// young female narration voice the account actually has. Voice ids are not
+// stable across accounts, and hardcoding one is how this script would fail on
+// someone else's machine with a 404 that explains nothing.
 // ---------------------------------------------------------------------------
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
@@ -32,9 +32,14 @@ const TIMING = resolve(ROOT, 'docs', 'video', 'narration-timing.json');
 
 const API = 'https://api.elevenlabs.io/v1';
 
-// Young female voices from ElevenLabs' default library, best first. Named
-// rather than id'd on purpose — see the header.
-const DEFAULT_VOICES = ['Rachel', 'Sarah', 'Laura', 'Bella', 'Elli', 'Alice', 'Lily', 'Matilda'];
+// Preferred narration voices, best first, matched by NAME PREFIX. Library
+// names carry a descriptor ("Riley - Engaging Young Female Voice"), so an
+// exact-equality match finds none of them. Falls back to ranking by label.
+const PREFERRED = ['Cherie', 'Riley', 'Danielle', 'Sarah', 'Jessica', 'Laura'];
+
+// For a product demo, a narration or advertisement voice beats a conversational
+// one, which beats a social-media one.
+const USE_CASE_RANK = ['narrative_story', 'advertisement', 'entertainment_tv', 'conversational', 'social_media'];
 
 // eleven_multilingual_v2 is the quality model; the turbo variants are for
 // latency, which a batch of eight offline clips does not care about.
@@ -59,33 +64,57 @@ function apiKey() {
 async function listVoices(key) {
   const res = await fetch(`${API}/voices`, { headers: { 'xi-api-key': key } });
   if (!res.ok) {
-    throw new Error(`GET /voices failed — ${res.status} ${await res.text()}`);
+    throw new Error(`GET /voices failed - ${res.status} ${await res.text()}`);
   }
   const { voices } = await res.json();
   return voices ?? [];
 }
 
+const labelsOf = (v) => Object.values(v.labels ?? {}).map((x) => String(x).toLowerCase());
+
+/** Young + female is a hard filter; use case breaks the tie. -1 means unusable. */
+function scoreVoice(v) {
+  const labels = labelsOf(v);
+  if (!labels.includes('female') || !labels.includes('young')) return -1;
+  const rank = USE_CASE_RANK.findIndex((u) => labels.includes(u));
+  return 100 - (rank === -1 ? USE_CASE_RANK.length : rank);
+}
+
+function findByName(voices, wanted) {
+  const norm = wanted.toLowerCase();
+  return (
+    voices.find((v) => v.voice_id === wanted)
+    ?? voices.find((v) => v.name?.toLowerCase() === norm)
+    ?? voices.find((v) => v.name?.toLowerCase().startsWith(norm))
+    ?? voices.find((v) => v.name?.toLowerCase().includes(norm))
+  );
+}
+
 function pickVoice(voices, wanted) {
   if (wanted) {
-    const byId = voices.find((v) => v.voice_id === wanted);
-    if (byId) return byId;
-    const byName = voices.find((v) => v.name?.toLowerCase() === wanted.toLowerCase());
-    if (byName) return byName;
-    // An id for a voice not in the library still works with the TTS endpoint,
-    // so pass it through rather than refusing.
+    const hit = findByName(voices, wanted);
+    if (hit) return hit;
+    // An id for a voice outside the account library still works with the TTS
+    // endpoint, so pass it through rather than refusing.
     if (/^[A-Za-z0-9]{20,}$/.test(wanted)) return { voice_id: wanted, name: `(id ${wanted})` };
     console.error(`No voice named or id'd "${wanted}" on this account.`);
     console.error('Run: node scripts/narrate.mjs --voices');
     process.exit(1);
   }
 
-  for (const name of DEFAULT_VOICES) {
-    const hit = voices.find((v) => v.name?.toLowerCase() === name.toLowerCase());
-    if (hit) return hit;
+  for (const name of PREFERRED) {
+    const hit = findByName(voices, name);
+    if (hit && scoreVoice(hit) > 0) return hit;
   }
-  if (voices.length) return voices[0];
 
-  console.error('The account has no voices at all.');
+  const ranked = voices
+    .map((v) => [scoreVoice(v), v])
+    .filter(([n]) => n > 0)
+    .sort((a, b) => b[0] - a[0]);
+  if (ranked.length) return ranked[0][1];
+
+  console.error('No young female voice on this account. Pick one explicitly:');
+  console.error('  node scripts/narrate.mjs --voices');
   process.exit(1);
 }
 

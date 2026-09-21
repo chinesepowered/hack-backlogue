@@ -1,0 +1,39 @@
+{
+  "01-gesture": {
+    "ms": 14954,
+    "words": 38
+  },
+  "02-landed": {
+    "ms": 8313,
+    "words": 22
+  },
+  "03-parser": {
+    "ms": 19040,
+    "words": 46
+  },
+  "04-genre": {
+    "ms": 16718,
+    "words": 43
+  },
+  "05-alerts": {
+    "ms": 13886,
+    "words": 33
+  },
+  "06-pro": {
+    "ms": 16115,
+    "words": 39
+  },
+  "07-multiplatform": {
+    "ms": 9427,
+    "words": 22
+  },
+  "08-close": {
+    "ms": 2972,
+    "words": 7
+  },
+  "_voice": {
+    "name": "Cherie - Smooth, Fluid and Advertisable",
+    "id": "vr5WKaGvRWsoaX5LCVax",
+    "model": "eleven_multilingual_v2"
+  }
+}
