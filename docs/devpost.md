@@ -1,149 +1,89 @@
-# Backlogue — Devpost project description
+# Backlogue: Devpost project description
 
-Paste into **Project details → description**. Public, and the first thing judges
-read.
+Paste into **Project details, description**. Public, and the first thing judges
+read. Every factual claim here was checked against the code on 2026-09-28; if
+you change the app, check this again, because a RevenueCat developer installs
+finalists specifically to verify claims.
+
+House style: no em dashes.
 
 ---
 
 ## A gaming bucket list that lives in your share sheet
 
-You're three minutes into a review. Something looks good. To save it, every other
-backlog app asks you to leave the video, open the app, search for the game, and
-file it.
+You're three minutes into a review and something looks good. To save it, every other backlog app wants you to leave the video, open the app, search for the game and file it.
 
-Almost nobody does that. That's why almost nobody's backlog is accurate.
+Almost nobody does that, which is why almost nobody's backlog is accurate.
 
-Backlogue is a share target. Share the video, the thread, or the store page into
-it and the game is in your pile in one tap, without leaving what you were
-watching.
+Backlogue is a share target. Share the video, the Reddit thread or the Steam page into it, and the game lands in your pile in one tap, without leaving what you were watching.
 
-## Everyone is fighting the wrong battle
+**Who it's for:** anyone whose list of games they meant to play lives in their head, a notes app, or twenty open browser tabs.
 
-Every tracker on the store competes on organising games you have *already* saved
-— tags, filters, custom lists, sort orders. All of that assumes the list is full.
+## Everyone else is fighting the wrong battle
 
-The list is never full. Games are lost in the gap between hearing about one and
-getting around to filing it, and no amount of organising fixes a gap that
-happens before the app is even open.
+Every tracker on the store competes on organising games you have *already* saved: tags, filters, custom lists, sort orders. All of that assumes the list is complete.
 
-So the entire product is one gesture, and everything else is bookkeeping.
+It never is. Games get lost in the gap between hearing about one and getting around to filing it, and no amount of organising fixes a gap that happens before the app is even open. So the product is one gesture, and everything else is bookkeeping.
 
 ## The hard part is a text parser
 
-A Steam share is easy — the game name is sitting in the URL:
-`/app/1030300/Hollow_Knight_Silksong/`.
+A Steam share is easy, because the game's name is sitting in the URL: `/app/1030300/Hollow_Knight_Silksong/`.
 
-A YouTube share is this:
+A YouTube share is a video title, and video titles are written to be clicked, not parsed: `SILKSONG IS FINALLY HERE! First Impressions | IGN`.
 
-> `🔥 SILKSONG IS FINALLY HERE — First 3 Hours | IGN`
+Backlogue strips bracketed tags, 52 noise phrases ("official trailer", "first impressions", "before you buy"), shouted hype words, and a trailing `| Channel`, but only when that tail matches a known outlet, so `Dark Souls | Remastered` survives intact.
 
-Backlogue strips bracketed tags, fifty-odd noise phrases ("official trailer",
-"first impressions", "before you buy"), shouted hype words, and a trailing
-`| Channel` — but **only** when the tail matches a known outlet, so
-`Dark Souls | Remastered` survives intact.
+It deliberately under-cleans, because search copes with an extra word far better than with a butchered title. When the only way to produce a query is to put back words it had marked as noise, it says so, flags the guess as low confidence, and opens a focused search box instead of pretending it understood.
 
-It biases hard toward *under*-cleaning, on the theory that search tolerates extra
-words far better than it tolerates a butchered title. When it can only produce a
-result by putting back words it had classified as noise, it says so, marks the
-guess low-confidence, and opens a focused search field instead of pretending it
-understood.
-
-That file is the least glamorous in the project and the one the whole product
-rests on. It has ten tests written against real share-sheet payloads.
+That file is the least glamorous one in the project and the one everything rests on. It has ten tests built from real share-sheet payloads.
 
 ## It remembers where you found it
 
-Every game keeps a note of where it came from. *"Hollow Knight: Silksong — from a
-YouTube video."*
+Every game keeps a line saying where it came from: *"From a YouTube video."* *"From Reddit."* *"From Steam."*
 
-That costs one database column, and six months later it is the difference between
-a list that reads like a record of your own taste and a list that reads like
-homework. It is the feature people will screenshot.
+It costs one database column. Six months later it's the difference between a list that reads like a record of your own taste and one that reads like homework.
 
 ## Designed against its own genre
 
-The thing this app visualises is, for most players, a source of low-grade guilt.
-Every "pile of shame" joke is a user telling you their tracker made them feel bad.
+For most players a backlog is low-grade guilt. Every "pile of shame" joke is someone telling you their tracker made them feel bad. So Backlogue refuses the genre's usual mechanics.
 
-So Backlogue is built against the genre's instincts:
+**No numbers anywhere.** No completion percentage, no "47 unplayed games" counter, no progress rings, no red badges, no overdue states. A status with nothing in it doesn't even get a filter chip, so a new player's filter row is never a row of zeroes.
 
-**No completion percentage.** No progress rings, no "47 unplayed games" counter,
-no red badges, no overdue states. Those are the mechanics that turn a collection
-into an obligation. Counts appear only inside the filter chips, where you went
-looking for them.
+**"Bounced", not "Abandoned".** A game you tried and didn't click with is Bounced. Other trackers say Dropped or Abandoned, and both read like an accusation about a perfectly reasonable decision. "I bounced off it" is what players actually say, and it puts the mismatch on the game rather than on you.
 
-**Near-black and art-forward.** Cover art is the most beautiful thing on the
-screen and we didn't draw it, so the interface gets out of its way. The only
-urgent colour in the entire system is the accent, and it is reserved for the one
-genuinely happy action: adding a game.
-
-**"Bounced", not "Abandoned".** Games you started and didn't finish are Bounced.
-Every other tracker calls this Dropped or Abandoned, and both land like an
-accusation about a perfectly reasonable decision. *"I bounced off it"* is what
-players actually say, and it puts the mismatch on the game rather than on you.
+**Dark-first and art-forward.** Cover art is the most beautiful thing on the screen and we didn't draw it, so the interface stays out of its way. In dark mode the app is near-black. On a light-mode phone it follows the system with a light palette built from the same design tokens. Either way, the one loud colour is reserved for adding a game.
 
 ## Alerts that earn their notification
 
-Something has to be awake when you aren't, to notice that a game you wanted
-finally got a release date. A Cloudflare Worker sweeps the games people are
-watching on an hourly cron and pushes through OneSignal — but only on a genuine
-transition: a game gained a date, its date moved, or it came out.
+Something has to stay awake to notice when a game you wanted finally gets a release date. A Cloudflare Worker sweeps the watched games every hour and pushes through OneSignal, but only on a real change: a game gained a date, its date moved, or it came out.
 
-The Worker snapshots every game between runs, which is the part that makes it
-bearable. Without it the obvious implementation re-sends "out now" every hour for
-a week, and that is exactly the kind of notification that gets an app muted and
-then deleted. First sight of a game writes a baseline and sends nothing.
+The Worker keeps a snapshot of every game between runs. Without it, the obvious implementation re-sends "out now" every hour for a week, which is exactly how an app gets muted and then deleted. The first sighting of a game writes a baseline and sends nothing.
 
-Only unresolved games are registered. A game you already beat needs no release
-alert.
+Only unfinished games are watched. A game you've already beaten doesn't need a release alert.
 
-## The monetization argument
+## How it makes money
 
-**The core loop is never gated.** Adding, organising, rating and sharing up to 30
-games is free forever. The permission prompt for notifications isn't even shown
-until you have something in your pile worth being notified about — asking on
-first launch is how apps get permanently denied.
+The core loop is never gated. Saving, organising and rating up to 30 games is free for good. **Backlogue Pro, $1.99 a month through RevenueCat,** removes the cap and turns on release alerts.
 
-Pro lifts the cap and adds the release alerts. That's it.
+A cap of five would convert better, and it would contradict the only thing this app is for. A paywall in the middle of saving a game would wreck the two seconds the whole product exists to protect, so the paywall appears in exactly two places: the Pro badge in the pile header, and the moment the free pile is full. Never on launch, and never mid-capture.
 
-**A cap at five would convert better.** It would also contradict the only thing
-this app is for. A paywall in the middle of saving a game destroys the two
-seconds the entire product exists to protect, so the paywall appears in exactly
-two places: the Pro badge in the pile header, and the moment the free pile is
-full. Never on launch, never mid-capture.
+## One Kotlin codebase
 
-Thirty was chosen from what real backlogs actually look like, not from what
-converts.
+Built with Kotlin Multiplatform and Compose Multiplatform. Android and desktop render the same composables, rather than a shared core with two hand-written front ends. The only platform-specific UI is the capture surface, because that's where the operating systems genuinely differ.
 
-## One Kotlin codebase, two platforms
+The shared Kotlin also compiles and links for iOS. A public GitHub Actions workflow on a macOS runner builds `ComposeApp.framework` with RevenueCat included. What isn't done yet is the Xcode packaging and an App Store release.
 
-Compose Multiplatform — Android and desktop share the *same UI*, not a shared
-core with two hand-written front ends. The only platform-specific code is the
-capture surface, because that is genuinely where the operating systems differ.
+## Awards we're entering, and why
 
-Desktop isn't a token second target either. A lot of game discovery happens in a
-browser tab on a PC, and a backlog that only exists on your phone is one you have
-to remember to open.
+- **Next Gen.** A student project, with the full source public and MIT licensed.
+- **RevenueCat Design Award.** The design argument is which mechanics were refused. The Design answer points to the details worth noticing.
+- **HAMM.** A paywall placed where it can't damage the core loop, and a free tier sized from real backlogs rather than from conversion.
+- **Keep Them Coming Back (OneSignal).** Release alerts that only fire on a real change, with snapshotting so nothing ever repeats.
+- **Ship Kotlin Everywhere.** One Compose Multiplatform UI on Android and desktop, with the shared code linking for iOS in CI.
+- **Influencer Award: Gaming.** A bucket list for saving, organising, completing and rating games that is built, first and foremost, not to feel like a chore.
 
-One consequence worth naming: the desktop build ships as the free tier by
-construction. There is no store and no notification service on that platform, so
-purchases and push resolve to honest no-ops rather than broken buttons.
+## Links
 
-## A trick that might be useful to someone else
-
-Store screenshots normally need an emulator or a device. Compose can lay out and
-rasterise **entirely offscreen through Skia**, so `./gradlew screenshots` renders
-the real composables straight to PNG at exactly 1179×2556 — no emulator, no
-device, no simulator.
-
-Better than a mock-up, too: they come from the shipping composables, so they
-physically cannot drift from the app.
-
-## Open source
-
-The whole thing: app, Worker, design system, and the parser.
-https://github.com/chinesepowered/hack-backlogue
-
----
-
-⚠️ **Live on Google Play.** Desktop build available as a release asset.
+- Source, MIT licensed: https://github.com/chinesepowered/hack-backlogue
+- iOS build in CI: https://github.com/chinesepowered/hack-backlogue/actions/workflows/ios.yml
+- Site and privacy policy: https://backlogue-app.vercel.app/

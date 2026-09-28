@@ -3,47 +3,56 @@
 **Every game you meant to play.** A gaming bucket list built around the one moment
 every other backlog app misses: the second you *discover* a game.
 
-You are three minutes into a YouTube review, or halfway down an r/Games thread,
-and something looks good. Every tracker on the market asks you to leave what you
-are doing, open an app, search for the game, and file it. Almost nobody does
-that, which is why almost nobody's backlog is accurate.
+You're three minutes into a YouTube review, or halfway down an r/Games thread,
+and something looks good. Every tracker asks you to leave what you're doing,
+open an app, search for the game, and file it. Almost nobody does that, which is
+why almost nobody's backlog is accurate.
 
-Backlogue lives in the share sheet instead. Share the video, the thread, or the Steam
-page into Backlogue and the game is in your pile before the video has finished
-buffering — with a note about where you found it, so six months later your list
-reads like a record of your own taste instead of a chore list.
+Backlogue lives in the share sheet instead. Share the video, the thread, or the
+Steam page into it and the game is in your pile in one tap, with a note about
+where you found it. Six months later your list reads like a record of your own
+taste instead of a chore list.
 
 Built for **RevenueCat Shipaton 2026**.
+
+- Demo video: https://www.youtube.com/watch?v=3Wbm6W8L_PI
+- Devpost entry: https://devpost.com/software/backlogue
+- Site and privacy policy: https://backlogue-app.vercel.app/
 
 ---
 
 ## Status
 
-Ships on **Android and Desktop**, both building on Windows and Linux. The iOS
-sources exist and are correct but have never been compiled — Kotlin/Native's
-iOS targets require the Xcode toolchain, which is macOS-only. See
-[setup.md](setup.md) for the reasoning and [SUBMISSION.md](SUBMISSION.md) for
-what is left.
+Android and desktop run from one Kotlin codebase with a shared Compose UI. The
+shared code also **compiles and links for iOS**: the
+[iOS workflow](https://github.com/chinesepowered/hack-backlogue/actions/workflows/ios.yml)
+builds `ComposeApp.framework` on a macOS runner, RevenueCat included. What isn't
+done for iOS is the Xcode packaging and an App Store release.
 
-## Why it is built this way
+## Why it's built this way
 
-**Kotlin Multiplatform + Compose Multiplatform.** One codebase, one design
-system, genuinely shared UI on Android and desktop — not a shared core with two
-hand-written front ends. The only platform-specific UI is the capture surface,
-because that is where the OS actually differs. Desktop is not a token target
-either: a lot of game discovery happens in a browser tab on a PC, and a backlog
-that only exists on your phone is one you have to remember to open.
+**Kotlin Multiplatform and Compose Multiplatform.** One codebase, one design
+system, and genuinely shared UI on Android and desktop, rather than a shared
+core with two hand-written front ends. The only platform-specific UI is the
+capture surface, because that's where the operating systems actually differ.
+Desktop isn't a token target either: a lot of game discovery happens in a browser
+tab on a PC, and a backlog that only exists on your phone is one you have to
+remember to open.
 
-**Dark-first, art-forward design.** The thing being visualised here is, for most
-players, a source of low-grade guilt — every "pile of shame" joke is a user
-telling you their tracker made them feel bad. So the palette is built to read as
-a gallery rather than a debt: near-black, deferential to cover art, no red
-badges, no overdue states. The last status is called *Bounced*, not *Abandoned*,
-because "I bounced off it" is what players actually say and it puts the mismatch
-on the game rather than the person.
+**Designed against its own genre.** For most players a backlog is low-grade
+guilt; every "pile of shame" joke is someone telling you their tracker made them
+feel bad. So there are no numbers anywhere: no completion percentage, no unplayed
+counter, no red badges, no overdue states. A status with nothing in it doesn't
+even get a filter chip. The last status is called *Bounced*, not *Abandoned*,
+because "I bounced off it" is what players actually say, and it puts the
+mismatch on the game rather than on the person.
 
-**Provenance as a first-class field.** Every add records where it came from.
-This is one extra column and it is the feature that turns a list into a story.
+**Dark-first and art-forward.** Cover art is the best thing on the screen, so the
+interface stays out of its way. The app is near-black in dark mode and follows
+the system theme, with a light palette built from the same tokens.
+
+**Provenance as a first-class field.** Every add records where it came from. It's
+one extra column, and it's the feature that turns a list into a story.
 
 ## Architecture
 
@@ -52,19 +61,24 @@ composeApp/
   src/
     commonMain/          Shared everything: UI, domain, data
       kotlin/com/chinesepowered/backlogue/
-        domain/          Models and pure logic — no framework imports
+        domain/          Models and pure logic, no framework imports
           capture/       Share-payload parsing (the core of the product)
           model/         Game, BacklogEntry, BacklogStatus, DiscoverySource
-        ui/theme/        Colour, type, shape, and motion tokens
+        ui/theme/        Colour, type, shape and motion tokens
       sqldelight/        Local database schema
     commonTest/          Pure-Kotlin tests, run on every target
-    androidMain/         Activities, share-sheet target, Android drivers
-    jvmMain/             Desktop app + offscreen screenshot renderer
-    iosMain/             iOS drivers and framework entry point (uncompiled)
+    mobileMain/          RevenueCat, shared by Android and iOS
+    androidMain/         Activities, share-sheet target, OneSignal, Android drivers
+    jvmMain/             Desktop app and the offscreen screenshot renderer
+    iosMain/             iOS drivers and framework entry point
+server/                  Cloudflare Worker: IGDB proxy and the hourly alert sweep
 ```
 
-Domain logic is deliberately free of Compose, Ktor, and SQLDelight imports so it
-can be tested without a device or a network.
+The domain layer deliberately imports no Compose, Ktor or SQLDelight, so it can
+be tested without a device or a network. `expect`/`actual` appears five times,
+each at a real platform boundary: the SQLite driver, the HTTP engine, the IO
+dispatcher, the Koin platform module and the purchases factory. Everything else
+goes through dependency injection.
 
 | Concern | Choice |
 | --- | --- |
@@ -75,48 +89,48 @@ can be tested without a device or a network.
 | Networking | Ktor 3 |
 | DI | Koin |
 | Images | Coil 3 |
-| Game data | IGDB |
+| Game data | IGDB, through the Worker |
 | Monetization | RevenueCat (`purchases-kmp`) |
+| Push | OneSignal |
 
 ## Building
 
-New to Kotlin, Gradle, or Xcode? **[setup.md](setup.md)** walks the whole thing
-from a fresh Mac, written for someone coming from Expo/React Native.
+New to Kotlin, Gradle or Xcode? **[setup.md](setup.md)** walks through the whole
+thing from scratch, written for someone coming from Expo and React Native.
 
 ```bash
-./gradlew :composeApp:run               # desktop app — fastest way to see it
+./gradlew :composeApp:run               # desktop app, the fastest way to see it
 ./gradlew :composeApp:assembleDebug     # Android APK
 ./gradlew :composeApp:testDebugUnitTest # tests
 ./gradlew screenshots                   # store screenshots, no emulator needed
-node tools/render-store-assets.mjs      # icon + Play feature graphic
 ```
 
-Requires **JDK 21** — not the JDK 25 that Android Studio bundles, which the
-Android Gradle Plugin rejects with an error message consisting solely of
-`25.0.2`.
+Requires **JDK 21**, not the JDK 25 that Android Studio bundles. The Android
+Gradle Plugin rejects 25 with an error message that consists only of `25.0.2`.
 
-**iOS** requires macOS + Xcode — see [setup.md](setup.md) appendix A.
+Search and alerts need the Worker. See [server/README.md](server/README.md) to
+deploy your own, then set `BACKLOGUE_API_BASE_URL` in `local.properties`.
 
-Store listing copy and assets: [docs/store/](docs/store/).
+**iOS** needs macOS and Xcode; see [setup.md](setup.md) appendix A.
+
+Store listing copy and assets are in [docs/store/](docs/store/). The demo video
+pipeline (narration, emulator capture, compositing) is described in
+[docs/video-script.md](docs/video-script.md).
 
 ## Roadmap
 
-- [x] KMP + Compose Multiplatform scaffold, building for Android
-- [x] Design system: colour, type, shape, motion tokens
-- [x] Domain model and share-payload parser, with tests
-- [x] Cloudflare Worker: IGDB proxy + hourly alert sweep
-- [x] Repository layer, SQLDelight store, Ktor client
-- [x] Pile, search, and game detail screens
-- [x] Android share-sheet capture (`ACTION_SEND` + `PROCESS_TEXT`)
-- [x] RevenueCat entitlements and paywall UI
+- [x] Share-sheet capture (`ACTION_SEND` and `PROCESS_TEXT`) with a tested parser
+- [x] Pile, search and game detail screens on a shared design system
+- [x] Cloudflare Worker: IGDB proxy and hourly release-alert sweep
+- [x] OneSignal release alerts on Android
+- [x] RevenueCat subscription, paywall, purchase and restore
+- [x] Desktop app
 - [x] Offscreen screenshot rendering (`./gradlew screenshots`)
-- [x] Purchase and restore through RevenueCat offerings
-- [x] OneSignal registration and release alerts (Android; iOS pending)
-- [x] Desktop app (`./gradlew :composeApp:run`)
-- [ ] iOS — blocked on macOS, see setup.md appendix A
-- [ ] Price-drop alerts (needs a pricing source IGDB does not provide)
-- [ ] Store listings and submission
+- [x] Shared code compiling and linking for iOS in CI
+- [ ] Share a game out of the app
+- [ ] iOS app packaging and App Store release
+- [ ] Price-drop alerts (needs a pricing source IGDB doesn't provide)
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
