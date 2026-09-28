@@ -229,7 +229,13 @@ export const SCENES = [
   {
     id: '08-close',
     title: 'Close',
-    narration: 'Backlogue. Every game you meant to play.',
+    // Names the awards, because the host's submission guide lists "prize
+    // categories targeted" as required coverage in the first two minutes of the
+    // video. The wordmark and tagline are on the card instead of in the voice,
+    // which is what keeps the whole video under the two-minute cap.
+    narration:
+      'Entered for Next Gen, Design, HAMM, Keep Them Coming Back, ' +
+      'Ship Kotlin Everywhere, and the Gaming influencer award.',
     minMs: 6_000,
     actions: [
       { shell: `am start -n ${MAIN}` },
