@@ -127,28 +127,32 @@ rather than unfinished.
 
 ---
 
-## Submitted — and what still has to change
+## State as of 2026-09-28
 
-The entry is in. Devpost allows re-submitting to update it until the deadline,
-so the remaining items are edits, not blockers.
+Submitted, and re-submitted with every claim checked against the code. Devpost
+allows re-submitting until the deadline, so everything below is an edit.
 
-**1. Make `hack-backlogue` public.** ⚠️ It is private right now, and Next Gen is
-judged on the source. The repo URL is already in the entry (field 27793) and in
-the project links, so today it 404s for a judge. History was scanned before
-submitting: 389 blobs, no `sk_`/`os_v2_app_`/`AIza`/`ghp_` keys, no private key
-blocks, and no keystore, `local.properties`, `.env` or service-account file was
-ever tracked. The only committed credentials are the RevenueCat `goog_` public
-SDK key and the OneSignal App ID, both of which are client-side by design.
+Done:
 
-**Leave `hack-ship` private.** It still holds the pre-rewrite history.
+- `hack-backlogue` is **public**, MIT licensed, and shows only `chinesepowered`
+  as an author. Next Gen is complete: video, public repo, student email.
+- The description names the awards entered and why, states the price, and
+  links the public iOS CI runs.
+- The gallery has eight images, all dark: the icon, the four 1179x2556
+  screenshots, and captures of the share sheet, the landing screen after a
+  share, and the paywall.
 
-**2. Play Store URL** (field 27384) and **first-release confirmation**
-(field 27380). Both were left blank because the app is on internal testing, not
-production — ticking 27380 today would be a false statement. Fill both in after
-the rollout, then re-submit.
+Still yours:
 
-**3. Promo code** (field 28135) — needs the subscription live.
-
-**4. Build-in-public links** (field 28119) — needs a public post to link.
-
-Only item 1 affects Next Gen. Items 2-4 affect the other six categories.
+1. **Get the first production release approved.** Every category except Next
+   Gen needs the app publicly live in the US by Sep 30, 11:45pm PT.
+2. **Then upload `versionCode 3`** as an update. See `SUBMISSION.md`; it must
+   not go up while the first release is still in review.
+3. **Promo code** (field 28135). Required, and missing.
+4. **Once live, re-submit** with the Play URL (27384) and the first-release box
+   (27380).
+5. **#BuildInPublic** needs social posts linked in 28119. It links only the
+   commit history today.
+6. **Sign in to YouTube** (`node ../_hackathon/scripts/yt-login.mjs`) so the new
+   video cut, which names the awards in its closing card, can replace the
+   current one.
