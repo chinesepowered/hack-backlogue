@@ -12,18 +12,37 @@ Two hard rules from the official rules worth re-reading before you start:
 
 ---
 
-## Critical path, as of 2026-09-20
+## Critical path, as of 2026-09-28
 
-Ten days left. Two things are on the critical path and nothing else is:
+Deadline: **Sep 30, 11:45pm PT.** The Devpost entry is submitted and the repo is
+public, so **Next Gen is eligible now**. Every other category needs the app
+publicly live on Google Play in the US by the deadline; testing tracks do not
+count, and "approved" can take up to a day to become visible.
 
-1. ~~Demo video~~ — **done**. Recorded, uploaded public, and set on the Devpost
-   project: https://www.youtube.com/watch?v=3Wbm6W8L_PI
-2. **The app is on internal testing, not production.** Play review is 3–7 days
-   from a standing start, and the Shipaton requires the app *fully published*.
-   Promoting is gated on the App content declarations, which are now all
-   answered — see [docs/store/store-submission.md](docs/store/store-submission.md).
+**1. The first production release is in review. Do not upload anything else
+until Play approves it.** A new upload replaces the release in review and
+restarts the clock. That release is `versionCode 2`, built Sep 10.
 
-Everything else listed below is done or is a form field.
+**2. The moment it is approved, upload `versionCode 3` as an update.** The
+Sep 10 build predates three fixes the demo video shows: the Pro badge that
+makes the paywall reachable, the status-bar inset on the game and capture
+screens, and the keyboard no longer covering search results after a share.
+`versionCode 3` has all three, plus a Share button on the game screen, which
+the Gaming influencer brief asks for. Eligibility only depends on the first
+release date, and judges install whatever is live when they get to the entry,
+so the update lands in time for judging even if it is approved after Sep 30.
+
+   `composeApp/build/outputs/bundle/release/composeApp-release.aab`
+
+**3. A promo code or a free trial is required** for judges to reach Pro, and
+the entry has neither. Play Console, Monetize, Promo codes, once the app is live,
+then paste it into Devpost field 28135.
+
+**4. Once live, re-submit Devpost** with the Play URL (field 27384) and the
+first-release box (field 27380) ticked. Both were left blank on purpose.
+
+**5. #BuildInPublic needs posts.** The award is for a journey shared on social
+media, and the entry links only to the commit history. `socials.md` has drafts.
 
 ---
 

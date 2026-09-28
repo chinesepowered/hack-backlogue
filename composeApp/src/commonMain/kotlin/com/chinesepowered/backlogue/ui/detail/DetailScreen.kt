@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -31,18 +32,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chinesepowered.backlogue.domain.model.BacklogStatus
+import com.chinesepowered.backlogue.share.GameSharer
 import com.chinesepowered.backlogue.ui.components.CoverImage
 import com.chinesepowered.backlogue.ui.components.StatusChip
 import com.chinesepowered.backlogue.ui.components.color
 import com.chinesepowered.backlogue.ui.theme.BacklogueShapes
 import com.chinesepowered.backlogue.ui.theme.BacklogueTheme
 import com.chinesepowered.backlogue.ui.theme.BacklogueType
+import org.koin.compose.koinInject
 
 @Composable
 fun DetailScreen(
     viewModel: DetailViewModel,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    sharer: GameSharer = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -56,6 +60,8 @@ fun DetailScreen(
         onSetStatus = viewModel::setStatus,
         onRate = viewModel::rate,
         onRemove = viewModel::remove,
+        canShare = sharer.available,
+        onShare = { state.item?.let(sharer::share) },
         modifier = modifier,
     )
 }
@@ -69,6 +75,10 @@ fun DetailContent(
     onRate: (Int) -> Unit,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
+    // Defaults keep the offscreen screenshot renderer, which has no sharer,
+    // drawing this screen unchanged.
+    canShare: Boolean = false,
+    onShare: () -> Unit = {},
 ) {
     val colors = BacklogueTheme.colors
     val item = state.item ?: return
@@ -92,6 +102,14 @@ fun DetailContent(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = colors.textSecondary)
             }
             Box(Modifier.weight(1f))
+            // Share is one of the five things the brief asks a bucket list to
+            // do. Secondary tint rather than the accent: the accent belongs to
+            // adding a game.
+            if (canShare) {
+                IconButton(onClick = onShare) {
+                    Icon(Icons.Default.Share, "Share", tint = colors.textSecondary)
+                }
+            }
             IconButton(onClick = onRemove) {
                 Icon(Icons.Default.Delete, "Remove from pile", tint = colors.textTertiary)
             }

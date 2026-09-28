@@ -6,6 +6,8 @@ import com.chinesepowered.backlogue.push.PushRegistrar
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
+import com.chinesepowered.backlogue.share.AndroidGameSharer
+import com.chinesepowered.backlogue.share.GameSharer
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -17,4 +19,5 @@ actual fun platformModule(): Module = module {
     // Overrides the common createPushRegistrar(): OneSignal needs a Context,
     // which only the platform module can supply.
     single<PushRegistrar> { OneSignalPushRegistrar(androidContext()) }
+    single<GameSharer> { AndroidGameSharer(androidContext()) }
 }

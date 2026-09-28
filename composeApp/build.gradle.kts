@@ -172,8 +172,8 @@ android {
         applicationId = "com.chinesepowered.backlogue"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 2
-        versionName = "0.1.0"
+        versionCode = 3
+        versionName = "0.1.1"
 
         buildConfigField("String", "BACKLOGUE_API_BASE_URL", "\"${secretOrEmpty("BACKLOGUE_API_BASE_URL")}\"")
         buildConfigField("String", "REVENUECAT_ANDROID_KEY", "\"$revenueCatAndroidKey\"")

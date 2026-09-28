@@ -6,6 +6,8 @@ import com.chinesepowered.backlogue.push.NoPushRegistrar
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Dispatchers
+import com.chinesepowered.backlogue.share.GameSharer
+import com.chinesepowered.backlogue.share.NoGameSharer
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -20,4 +22,5 @@ actual fun platformModule(): Module = module {
     // OneSignal.User.pushSubscription.id across the interop boundary. Until
     // then the app runs and alerts simply do not register on iOS.
     single<PushRegistrar> { NoPushRegistrar() }
+    single<GameSharer> { NoGameSharer() }
 }

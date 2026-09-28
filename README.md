@@ -127,7 +127,7 @@ pipeline (narration, emulator capture, compositing) is described in
 - [x] Desktop app
 - [x] Offscreen screenshot rendering (`./gradlew screenshots`)
 - [x] Shared code compiling and linking for iOS in CI
-- [ ] Share a game out of the app
+- [x] Share a game out of the app (Android share sheet)
 - [ ] iOS app packaging and App Store release
 - [ ] Price-drop alerts (needs a pricing source IGDB doesn't provide)
 
