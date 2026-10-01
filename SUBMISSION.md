@@ -19,11 +19,14 @@ public, so **Next Gen is eligible now**. Every other category needs the app
 publicly live on Google Play in the US by the deadline; testing tracks do not
 count, and "approved" can take up to a day to become visible.
 
-**1. The first production release is in review. Do not upload anything else
-until Play approves it.** A new upload replaces the release in review and
+**1. Done: live on Google Play Sep 30.** https://play.google.com/store/apps/details?id=com.chinesepowered.backlogue
+The entry carries the Play URL and the first-release confirmation.
+
+~~The first production release is in review. Do not upload anything else
+until Play approves it.~~ A new upload replaces the release in review and
 restarts the clock. That release is `versionCode 2`, built Sep 10.
 
-**2. The moment it is approved, upload `versionCode 3` as an update.** The
+**2. Upload `versionCode 3` as an update now.** The
 Sep 10 build predates three fixes the demo video shows: the Pro badge that
 makes the paywall reachable, the status-bar inset on the game and capture
 screens, and the keyboard no longer covering search results after a share.

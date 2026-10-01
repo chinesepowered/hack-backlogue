@@ -144,13 +144,11 @@ Done:
 
 Still yours:
 
-1. **Get the first production release approved.** Every category except Next
-   Gen needs the app publicly live in the US by Sep 30, 11:45pm PT.
-2. **Then upload `versionCode 3`** as an update. See `SUBMISSION.md`; it must
-   not go up while the first release is still in review.
+1. ~~First production release~~. **Live on Google Play Sep 30**, Play URL and the
+   first-release box are on the entry, so all seven categories are eligible.
+2. **Upload `versionCode 3`** as an update now. With the first release live,
+   this no longer risks eligibility.
 3. **Promo code** (field 28135). Required, and missing.
-4. **Once live, re-submit** with the Play URL (27384) and the first-release box
-   (27380).
 5. **#BuildInPublic** needs social posts linked in 28119. It links only the
    commit history today.
 6. **Sign in to YouTube** (`node ../_hackathon/scripts/yt-login.mjs`) so the new

@@ -18,10 +18,10 @@ House style: no em dashes.
 | --- | --- | --- |
 | 27378 | Includes app icon | Yes |
 | 27379 | Includes screenshot | Yes |
-| 27380 | First version released Aug 1 to Sep 30 | **Only tick once the Play listing is live** |
+| 27380 | First version released Aug 1 to Sep 30 | Yes. Live on Google Play Sep 30, 2026 |
 | 27381 | Staff or sponsor | No |
 | 27382 | App type | Android |
-| 27384 | Google Play URL | **Only once live**: `https://play.google.com/store/apps/details?id=com.chinesepowered.backlogue` |
+| 27384 | Google Play URL | https://play.google.com/store/apps/details?id=com.chinesepowered.backlogue |
 | 27793 | Next Gen repo | https://github.com/chinesepowered/hack-backlogue |
 | 27792 | Next Gen student email | `clai74@mail.ccsf.edu` |
 | 28375 | Minor entrant consent | Yes (the entrant is not a minor) |
