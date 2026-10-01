@@ -80,10 +80,15 @@ The shared Kotlin also compiles and links for iOS. A public GitHub Actions workf
 - **HAMM.** A paywall placed where it can't damage the core loop, and a free tier sized from real backlogs rather than from conversion.
 - **Keep Them Coming Back (OneSignal).** Release alerts that only fire on a real change, with snapshotting so nothing ever repeats.
 - **Ship Kotlin Everywhere.** One Compose Multiplatform UI on Android and desktop, with the shared code linking for iOS in CI.
-- **Influencer Award: Gaming.** A bucket list for saving, organising, completing and rating games that is built, first and foremost, not to feel like a chore.
+- **Influencer Award: Gaming.** A bucket list for saving, organising, completing, rating and sharing games that is built, first and foremost, not to feel like a chore.
+
+## A note on versions
+
+The demo video shows version 0.1.1, submitted to Google Play on Sep 30 and in review as we submit. Compared with 0.1.0, it adds the Pro badge in the pile header, a Share button on each game, and fixes that keep the status bar and the keyboard clear of the content. If Play still serves 0.1.0 when you install, those are the only differences.
 
 ## Links
 
+- Google Play: https://play.google.com/store/apps/details?id=com.chinesepowered.backlogue
 - Source, MIT licensed: https://github.com/chinesepowered/hack-backlogue
 - iOS build in CI: https://github.com/chinesepowered/hack-backlogue/actions/workflows/ios.yml
 - Site and privacy policy: https://backlogue-app.vercel.app/

@@ -35,7 +35,7 @@ House style: no em dashes.
 
 ## 27944: Influencer Award, Gaming
 
-The brief asks for a gaming bucket list where players can save, organise, complete and rate the games they want to play, and it asks whether managing a backlog feels enjoyable rather than like another chore. Backlogue treats that second part as the real design problem.
+The brief asks for a gaming bucket list where players can save, organise, complete, rate and share the games they want to play, and it asks whether managing a backlog feels enjoyable rather than like another chore. Backlogue treats that second part as the real design problem.
 
 **Saving** happens where discovery happens. Backlogue is a share target: share a YouTube video, a Reddit thread or a Steam page into it, and the game is in your pile in one tap without leaving what you were watching. Every tracker makes you stop, open an app and search, which is why their lists are never complete.
 
@@ -44,6 +44,8 @@ The brief asks for a gaming bucket list where players can save, organise, comple
 **Completing** a game marks it Beaten. Giving up on one marks it Bounced, not Abandoned, because "I bounced off it" is what players actually say and it puts the mismatch on the game instead of on the player.
 
 **Rating** is 1 to 10 and only appears once a game is resolved. Asking someone to score a game they haven't finished is how trackers fill up with noise.
+
+**Sharing** a game opens Android's own share sheet with what you did with it, your rating, and where you found it: "Beat Outer Wilds. Found it through Reddit." Sharing arrives in version 0.1.1, submitted to Google Play on Sep 30 and in review as we submit.
 
 **Not feeling like a chore** is the part the whole app is built around. There are no numbers anywhere: no completion percentage, no unplayed counter, no progress rings, no red badges, no overdue states. Those are the mechanics that turn a collection into an obligation. Every game also remembers where you found it ("From a YouTube video"), so the list reads like a record of your own taste rather than a to-do list.
 
@@ -146,6 +148,8 @@ The case we'd make is about the shape of the loop. Backlogue is a share target, 
 
 ## 27392: Notes for the judges
 
+**Versions.** The demo video shows 0.1.1, submitted to Google Play on Sep 30 and in review as we submit. Compared with 0.1.0 it adds the Pro badge in the pile header, a Share button on each game, and fixes that keep the status bar and the keyboard clear of the content. If Play still serves 0.1.0 when you install, those are the only differences. The promo code works on either.
+
 **Where to look in the code.** `ShareTextParser` is the file the product rests on, with ten tests built from real share-sheet payloads, including the case where every word is noise and the fallback has to put words back instead of handing the user an empty search box. The domain layer imports no framework, so all of it is testable without a device or a network.
 
 **Two platforms, one UI.** Android and desktop render the same composables. Desktop is the free tier by construction: there's no store or notification service there, so purchases and push resolve to honest no-ops instead of buttons that fail.
@@ -154,7 +158,7 @@ The case we'd make is about the shape of the loop. Backlogue is a share target, 
 
 **About the demo video.** It's vertical and under two minutes, so YouTube filed it as a Short; `youtube.com/watch?v=3Wbm6W8L_PI` is the same video. It was recorded on a light-mode phone. The app follows the system theme, and the screenshots show dark mode.
 
-**Links.** Source: https://github.com/chinesepowered/hack-backlogue. iOS CI: https://github.com/chinesepowered/hack-backlogue/actions/workflows/ios.yml
+**Links.** Google Play: https://play.google.com/store/apps/details?id=com.chinesepowered.backlogue. Source: https://github.com/chinesepowered/hack-backlogue. iOS CI: https://github.com/chinesepowered/hack-backlogue/actions/workflows/ios.yml
 
 ---
 
