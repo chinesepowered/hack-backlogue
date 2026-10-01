@@ -26,7 +26,7 @@ House style: no em dashes.
 | 27792 | Next Gen student email | `clai74@mail.ccsf.edu` |
 | 28375 | Minor entrant consent | Yes (the entrant is not a minor) |
 | 28118 | RevenueCat project ID | `projb3ae91a4` |
-| 28135 | Promo code | **Missing. Required unless there is a free trial.** |
+| 28135 | Promo code | `JUDGING`, a Play custom code for `backlogue_pro_monthly` |
 | 27943 | Influencer category | Gaming (Mr Lewis Blogs Gaming) |
 | 28128 | OneSignal App ID | `5c4fb51b-9266-4ba7-90e7-2c381417c858` |
 | 27791 | Growth Fund | No |

@@ -148,7 +148,7 @@ Still yours:
    first-release box are on the entry, so all seven categories are eligible.
 2. **Upload `versionCode 3`** as an update now. With the first release live,
    this no longer risks eligibility.
-3. **Promo code** (field 28135). Required, and missing.
+3. ~~Promo code~~. `JUDGING` is on the entry (field 28135).
 5. **#BuildInPublic** needs social posts linked in 28119. It links only the
    commit history today.
 6. **Sign in to YouTube** (`node ../_hackathon/scripts/yt-login.mjs`) so the new
